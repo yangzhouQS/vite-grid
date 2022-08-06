@@ -152,15 +152,15 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
     this._fadeinWhenCallbackInPromise = option?.fadeinWhenCallbackInPromise;
   }
 
-  public get transfer(): DataTransfer {
+  public get transfer(): DataTransfer | undefined {
     return this._transfer;
   }
 
-  get copyTransfer(): DataTransfer {
+  get copyTransfer(): DataTransfer | undefined {
     return this._copyTransfer;
   }
 
-  get hidden(): boolean | ((record: T) => boolean) {
+  get hidden(): boolean | ((record: T) => boolean) | undefined {
     return this._hidden;
   }
 
@@ -266,7 +266,8 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
     } else {
       const actStyle = styleContents.of(style, record, this.StyleClass);
       this.drawInternal(
-        this.convertInternal(cellValue,),
+        // this.convertInternal(cellValue),
+        this.afterConvertInternal<any>(cellValue, getCell(), grid),
         context,
         actStyle,
         helper,

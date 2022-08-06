@@ -2,7 +2,7 @@ import './styles/example.css'
 import { ListGrid, columns } from '../src/main'
 import { getListData } from "./utils/generate";
 
-const listData = getListData(1)
+const listData = getListData(100)
 const headerColumns: any = [
   {
     caption: "序号", width: 100,

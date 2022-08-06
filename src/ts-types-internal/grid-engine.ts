@@ -118,7 +118,7 @@ export interface GridInternal<T> extends ListGridAPI<T> {
   "$$$$check_header.stateID symbol$$$$"?: CheckHeaderState;
 }
 
-export type DataTransfer = <V>(
+export type DataTransfer = <V = any>(
   rawValue: unknown,
   newValue: V,
   cell: CellAddress,

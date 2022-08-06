@@ -15,8 +15,9 @@ export class RowIndex<T> extends BaseColumn<T, string> {
 
   drawInternal(value: string, context: CellContext, style: BaseStyle, helper: GridCanvasHelperAPI,
                _grid: ListGridAPI<T>, info: DrawCellInfo<T>): void {
+    console.log(value, style)
     const cellInfo = info.getCell()
-    helper.text(`${cellInfo.row}`, context, {
+    helper.text(`${ cellInfo.row }`, context, {
       color: '#e00404',
       textAlign: 'center',
     })
