@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../dist/grid-system.umd.js"></script>
+</head>
+<body>
+<div style="width: 1000px;height: 400px;border: 1px solid #2196f3" id="app"></div>
+<script>
+  console.log(window)
+  console.log(window.GridSystem)
+  const grid = new GridSystem.ListGrid({
+    parentElement: document.querySelector('app'),
+    header: [
+      { field: 'name', caption: 'Last Name', width: 200 },
+      { field: 'age', caption: 'Last Age', width: 200 }
+    ],
+    frozenColCount: 1,
+  })
+  grid.records = [
+    { name: 'AAA', age: 1234 },
+    { name: 'BBB', age: 1234 }
+  ];
+</script>
+</body>
+</html>
