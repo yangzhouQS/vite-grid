@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-interface User {
+/*interface User {
   userId: string
   username: string
   phone: string
@@ -11,11 +11,11 @@ interface User {
   password: string
   birthdate: any
   registeredAt: Date
-}
+}*/
 
-export const USERS: User[] = [];
+export const dataList = [];
 
-export function createRandomUser(): User {
+export function createRandomUser() {
   return {
     userId: faker.datatype.uuid(),
     username: faker.internet.userName(),
@@ -30,6 +30,14 @@ export function createRandomUser(): User {
   };
 }
 
-Array.from({ length: 10 }).forEach(() => {
-  USERS.push(createRandomUser());
-});
+/**
+ * 模拟假数据
+ * @param count
+ */
+export function getListData(count=10) {
+  const data=[]
+  for (let i = 0; i < count; i++) {
+    data.push(createRandomUser())
+  }
+  return data
+}

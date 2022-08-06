@@ -36,7 +36,6 @@ export {
   ListGrid,
   // ListGrid types
   // ListGridConstructorOptions,
-  // HeadersDefine,
   // ColumnDefine,
   // HeaderDefine,
   // GroupHeaderDefine,
