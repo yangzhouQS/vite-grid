@@ -3,12 +3,15 @@ import type { ColumnMenuItemOptions } from "../define";
 export interface BaseColumnOption {
   fadeinWhenCallbackInPromise?: boolean | null;
 }
+
 export interface NumberColumnOption extends BaseColumnOption {
   format?: Intl.NumberFormat;
 }
+
 export interface ButtonColumnOption extends BaseColumnOption {
   caption?: string;
 }
+
 export interface MenuColumnOption extends BaseColumnOption {
   options?: ColumnMenuItemOptions;
 }
@@ -20,6 +23,7 @@ export interface IconColumnOption extends BaseColumnOption {
   name?: string;
   iconWidth?: number;
 }
+
 export interface PercentCompleteBarColumnOption extends BaseColumnOption {
   min?: number;
   max?: number;
@@ -31,32 +35,37 @@ export interface BranchGraphColumnOption extends BaseColumnOption {
   cache?: boolean;
 }
 
+// 自定义列类型
+export interface RowIndexOption extends BaseColumnOption {
+
+}
+
 export type SimpleBranchGraphCommand =
   | {
-      command: "branch";
-      branch:
-        | string
-        | {
-            from: string;
-            to: string;
-          };
-    }
+  command: "branch";
+  branch:
+    | string
+    | {
+    from: string;
+    to: string;
+  };
+}
   | {
-      command: "commit";
-      branch: string;
-    }
+  command: "commit";
+  branch: string;
+}
   | {
-      command: "merge";
-      branch: {
-        from: string;
-        to: string;
-      };
-    }
+  command: "merge";
+  branch: {
+    from: string;
+    to: string;
+  };
+}
   | {
-      command: "tag";
-      branch: string;
-      tag: string;
-    };
+  command: "tag";
+  branch: string;
+  tag: string;
+};
 export type BranchGraphCommand =
   | SimpleBranchGraphCommand
   | undefined

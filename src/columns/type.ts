@@ -20,6 +20,7 @@ import { MultilineTextColumn } from "./type/MultilineTextColumn";
 import { NumberColumn } from "./type/NumberColumn";
 import { PercentCompleteBarColumn } from "./type/PercentCompleteBarColumn";
 import { RadioColumn } from "./type/RadioColumn";
+import { RowIndex } from "@/columns/type/RowIndex";
 
 const TYPES = {
   DEFAULT: new Column<any>(),
@@ -29,6 +30,7 @@ const TYPES = {
   BUTTON: new ButtonColumn<any>(),
   IMAGE: new ImageColumn<any>(),
   MULTILINETEXT: new MultilineTextColumn<any>(),
+  ROWINDEXCOLUMN: new RowIndex<any>()
 };
 
 /**
@@ -56,6 +58,7 @@ export {
   MenuColumnOption,
   NumberColumnOption,
   PercentCompleteBarColumnOption,
+  RowIndex
 };
 
 export function of<T>(

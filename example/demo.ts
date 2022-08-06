@@ -2,11 +2,11 @@ import './styles/example.css'
 import { ListGrid, columns } from '../src/main'
 import { getListData } from "./utils/generate";
 
-const listData = getListData(20)
+const listData = getListData(1)
 const headerColumns: any = [
   {
     caption: "序号", width: 100,
-    columnType: new columns.type.Column({
+    columnType: new columns.type.RowIndex({
       /*convert: function (value, displayValue, cell, grid) {
          return cell.row - grid.frozenRowCount + 1;
        },*/
