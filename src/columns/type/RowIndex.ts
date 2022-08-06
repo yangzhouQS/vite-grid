@@ -13,17 +13,12 @@ export class RowIndex<T> extends BaseColumn<T, string> {
     return new RowIndex(this);
   }
 
-  drawInternal(value: string, context: CellContext, style: BaseStyle, helper: GridCanvasHelperAPI, _grid: ListGridAPI<T>, info: DrawCellInfo<T>): void {
-    console.log(value)
-    console.log(context)
-    console.log(style)
-    console.log(helper)
-    console.log(_grid.records)
-    console.log(info)
-    helper.text('111', context, {
+  drawInternal(value: string, context: CellContext, style: BaseStyle, helper: GridCanvasHelperAPI,
+               _grid: ListGridAPI<T>, info: DrawCellInfo<T>): void {
+    const cellInfo = info.getCell()
+    helper.text(`${cellInfo.row}`, context, {
       color: '#e00404',
-      textAlign: 'right',
+      textAlign: 'center',
     })
-    //
   }
 }

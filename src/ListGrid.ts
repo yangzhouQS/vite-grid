@@ -332,6 +332,8 @@ function _onDrawValue<T>(
     drawCellBg({ bgColor });
     drawCellBorder();
   };
+
+  // 单元格绘制传递参数
   const info: DrawCellInfo<T> = {
     getRecord: () => grid.getRowRecord(row),
     getIcon: () => _getCellIcon(grid, col, row),
@@ -341,8 +343,12 @@ function _onDrawValue<T>(
     drawCellBase,
     drawCellBg,
     drawCellBorder,
+    getCell(): CellAddress {
+      return {col,row}
+    }
   };
 
+  // 开始绘制单元格
   return draw(cellValue, info, context, grid);
 }
 

@@ -25,7 +25,7 @@ export abstract class BaseHeader<T> {
     context: CellContext,
     grid: ListGridAPI<T>
   ): void {
-    const { style, drawCellBase } = info;
+    const { style, drawCellBase, drawCellBorder } = info;
     const helper = grid.getGridCanvasHelper();
     drawCellBase();
     //文字描画
@@ -37,6 +37,7 @@ export abstract class BaseHeader<T> {
       grid,
       info
     );
+    drawCellBorder()
   }
 
   convertInternal(value: unknown): string {

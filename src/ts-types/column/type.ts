@@ -1,7 +1,19 @@
 import type { ColumnMenuItemOptions } from "../define";
+import { CellAddress } from "@/ts-types";
+import { ListGrid } from "@/ListGrid";
+import { DataTransfer } from "@/ts-types-internal";
 
 export interface BaseColumnOption {
   fadeinWhenCallbackInPromise?: boolean | null;
+  transfer?: DataTransfer;
+  copyTransfer?: DataTransfer;
+  hidden?: boolean | ((record: any) => boolean)
+}
+
+export interface ITransformOption {
+  value: unknown,
+  cell: CellAddress,
+  grid: ListGrid<any>
 }
 
 export interface NumberColumnOption extends BaseColumnOption {

@@ -4,6 +4,7 @@ export interface CellAddress {
   col: number;
   row: number;
 }
+
 export interface CellRange {
   start: CellAddress;
   end: CellAddress;
@@ -13,6 +14,7 @@ export interface CellRange {
 export type FieldGetter<T> = (record: T) => any;
 
 export type FieldSetter<T> = (record: T, value: any) => void;
+
 export interface FieldAssessor<T> {
   get: FieldGetter<T>;
   set: FieldSetter<T>;

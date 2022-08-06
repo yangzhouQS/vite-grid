@@ -25,13 +25,22 @@ export interface MessageHandler<T> {
 
 export interface DrawCellInfo<T> {
   getRecord(): unknown;
+
   getIcon(): ColumnIconOption<T> | ColumnIconOption<T>[] | null;
+
   getMessage(): Message;
+
   messageHandler: MessageHandler<T>;
+
   style: ColumnStyleOption | HeaderStyleOption | null | undefined;
+
   drawCellBase(arg?: { bgColor?: ColorPropertyDefine }): void;
+
   drawCellBg(arg?: { bgColor?: ColorPropertyDefine }): void;
+
   drawCellBorder(): void;
+
+  getCell(): CellAddress;
 }
 
 export type ColumnFadeinState = {
@@ -71,19 +80,19 @@ interface BranchLine {
   readonly colorIndex: number;
   readonly point?: BranchPoint;
 }
+
 interface BranchPoint {
   readonly index: number;
   readonly commit: boolean;
   lines: BranchLine[];
   readonly tag?: string;
 }
-export type BranchGraphColumnState<T> = Map<
-  FieldDef<T>,
-  { timeline: BranchPoint[][]; branches: string[] }
->;
+
+export type BranchGraphColumnState<T> = Map<FieldDef<T>,
+  { timeline: BranchPoint[][]; branches: string[] }>;
 
 export type InputEditorState = {
-  
+
   element?: any;
 };
 
@@ -108,3 +117,10 @@ export interface GridInternal<T> extends ListGridAPI<T> {
   "$$$$small_dialog_input_editor.stateID symbol$$$$"?: InputEditorState;
   "$$$$check_header.stateID symbol$$$$"?: CheckHeaderState;
 }
+
+export type DataTransfer = <V>(
+  rawValue: unknown,
+  newValue: V,
+  cell: CellAddress,
+  grid: ListGridAPI<any>
+) => V

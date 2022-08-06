@@ -10,16 +10,16 @@ import type {
   ListGridAPI,
   MaybePromise,
   Message,
-} from "../../ts-types";
+} from "@/ts-types";
 import type {
-  ColumnFadeinState,
+  ColumnFadeinState, DataTransfer,
   DrawCellInfo,
   GridInternal,
-} from "../../ts-types-internal";
-import { isPromise, obj } from "../../internal/utils";
+} from "@/ts-types-internal";
+import { isPromise, obj } from "@/internal/utils";
 import { BaseStyle } from "../style/BaseStyle";
-import { animate } from "../../internal/animate";
-import { getColumnFadeinStateId } from "../../internal/symbolManager";
+import { animate } from "@/internal/animate";
+import { getColumnFadeinStateId } from "@/internal/symbolManager";
 
 const { setReadonly } = obj;
 const COLUMN_FADEIN_STATE_ID = getColumnFadeinStateId();
@@ -42,6 +42,7 @@ function getFadeinState<T>(grid: GridInternal<T>): ColumnFadeinState {
   }
   return state;
 }
+
 function _generateFadeinPointAction<T>(
   grid: ListGridAPI<T>,
   col: number,
@@ -52,7 +53,7 @@ function _generateFadeinPointAction<T>(
 ): (point: number) => void {
   return (point: number): void => {
     const state = getFadeinState(grid);
-    const stateKey = `${row}:${col}`;
+    const stateKey = `${ row }:${ col }`;
     if (point === 1) {
       delete state.cells[stateKey];
     } else {
@@ -77,6 +78,7 @@ function _generateFadeinPointAction<T>(
     }
   };
 }
+
 const fadeinMgr = {
   animate<T>(
     grid: ListGridAPI<T>,
@@ -135,26 +137,48 @@ const fadeinMgr = {
 };
 
 export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
+
   private _fadeinWhenCallbackInPromise?: boolean | null;
+  private _transfer?: DataTransfer
+  private _copyTransfer?: DataTransfer
+  private _hidden?: boolean | ((record: T) => boolean)
+
   constructor(option?: BaseColumnOption) {
     this.onDrawCell = this.onDrawCell.bind(this); //スコープを固定させる
-
+    this._transfer = option?.transfer
+    this._copyTransfer = option?.copyTransfer
+    this._hidden = option?.hidden
     //Promiseのcallbackでフェードイン表示する
     this._fadeinWhenCallbackInPromise = option?.fadeinWhenCallbackInPromise;
   }
+
+  public get transfer(): DataTransfer {
+    return this._transfer;
+  }
+
+  get copyTransfer(): DataTransfer {
+    return this._copyTransfer;
+  }
+
+  get hidden(): boolean | ((record: T) => boolean) {
+    return this._hidden;
+  }
+
   get fadeinWhenCallbackInPromise(): boolean | undefined | null {
     return this._fadeinWhenCallbackInPromise;
   }
+
   get StyleClass(): typeof BaseStyle {
     return BaseStyle;
   }
+
   onDrawCell(
     cellValue: MaybePromise<unknown>,
     info: DrawCellInfo<T>,
     context: CellContext,
     grid: ListGridAPI<T>
   ): void | Promise<void> {
-    const { style, getRecord, drawCellBase } = info;
+    const { style, getRecord, drawCellBase, getCell } = info;
     const helper = grid.getGridCanvasHelper();
     drawCellBase();
 
@@ -194,7 +218,8 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
 
           const actStyle = styleContents.of(style, record, this.StyleClass);
           this.drawInternal(
-            this.convertInternal(val),
+            // this.convertInternal(val),
+            this.afterConvertInternal(val, getCell(), grid),
             currentContext,
             actStyle,
             helper,
@@ -241,7 +266,7 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
     } else {
       const actStyle = styleContents.of(style, record, this.StyleClass);
       this.drawInternal(
-        this.convertInternal(cellValue),
+        this.convertInternal(cellValue,),
         context,
         actStyle,
         helper,
@@ -258,7 +283,7 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
       );
       //フェードインの場合透過するため背景を透過で上書き
       const { col, row } = context;
-      const stateKey = `${col}:${row}`;
+      const stateKey = `${ col }:${ row }`;
       const cellState = (grid as GridInternal<T>)[COLUMN_FADEIN_STATE_ID]
         ?.cells[stateKey];
       if (cellState) {
@@ -273,10 +298,31 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
       return undefined;
     }
   }
+
   abstract clone(): BaseColumn<T, V>;
-  convertInternal(value: unknown): V {
-    return (value != null ? value : "") as V;
+
+  /*transfer(value: unknown, newValue: any, cell: CellAddress, grid: ListGridAPI<any>) {
+    debugger
+    return value
+  }*/
+
+  afterConvertInternal(
+    value: unknown,
+    cell: CellAddress,
+    grid: ListGridAPI<T>
+  ) {
+    let displayValue = this.convertInternal(value)
+    if (this.transfer) {
+      displayValue = this.transfer(value, displayValue, cell, grid)
+    }
+    return displayValue
   }
+
+  convertInternal(value: unknown): unknown {
+    return value != null ? value : "";
+  }
+
+  // 绘制单元格内容
   abstract drawInternal(
     value: V,
     context: CellContext,
@@ -285,6 +331,7 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
     grid: ListGridAPI<T>,
     info: DrawCellInfo<T>
   ): void;
+
   drawMessageInternal(
     message: Message,
     context: CellContext,
@@ -302,18 +349,20 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
       info
     );
   }
+
   bindGridEvent(
     _grid: ListGridAPI<T>,
     _cellId: LayoutObjectId
   ): EventListenerId[] {
     return [];
   }
+
   getCopyCellValue(
     value: V,
     _grid: ListGridAPI<T>,
     _cell: CellAddress
   ): string {
-    
+
     return value as any;
   }
 }
