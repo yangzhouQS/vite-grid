@@ -50,8 +50,6 @@ import {
 	KEY_UP,
 	KEY_BS
 } from '@/core/drap-grid/KEY_CODE';
-// import SmoothScrollbar from '@/internal/SmoothScrollbar';
-import PerfectScrollBar from '@/internal/PerfectScrollbar';
 import { Scrollable } from '@/internal/Scrollable';
 
 const {
