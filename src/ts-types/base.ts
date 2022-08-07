@@ -46,4 +46,4 @@ export interface RectProps {
   height: number;
 }
 
-export type ColorDef = CanvasRenderingContext2D["fillStyle"];
+export type ColorDef = CanvasRenderingContext2D['fillStyle'];

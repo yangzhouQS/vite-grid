@@ -1,5 +1,5 @@
-import type { LineClamp, TextOverflow } from "../define";
-import type { ColorDef } from "../base";
+import type { LineClamp, TextOverflow } from '../define';
+import type { ColorDef } from '../base';
 
 export interface ColumnStyle {
   bgColor?: ColorDef;
@@ -25,9 +25,7 @@ export interface StyleOption extends StdBaseStyleOption {
   textOverflow?: TextOverflow;
 }
 
-export interface RowIndexStyleOption extends StyleOption {
-
-}
+export type RowIndexStyleOption = StyleOption
 
 export interface HeaderStdStyleOption extends StdBaseStyleOption {
   color?: ColorDef;
@@ -74,11 +72,11 @@ export interface MultilineTextHeaderStyleOption extends HeaderStdStyleOption {
 }
 
 export interface MenuStyleOption extends StyleOption {
-  appearance?: "menulist-button" | "none";
+  appearance?: 'menulist-button' | 'none';
 }
 
 export interface ImageStyleOption extends StdBaseStyleOption {
-  imageSizing?: "keep-aspect-ratio";
+  imageSizing?: 'keep-aspect-ratio';
   margin?: number;
 }
 
@@ -89,7 +87,7 @@ export interface BranchGraphStyleOption extends BaseStyleOption {
   margin?: number;
   circleSize?: number;
   branchLineWidth?: number;
-  mergeStyle?: "straight" | "bezier";
+  mergeStyle?: 'straight' | 'bezier';
 }
 
 export interface PercentCompleteBarStyleOption extends StyleOption {

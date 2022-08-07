@@ -1,16 +1,16 @@
-import type { CellAddress, FieldDef } from "../ts-types/grid";
+import type { CellAddress, FieldDef } from '../ts-types/grid';
 import type {
-  CellContext,
-  GridCanvasHelperAPI,
-  ListGridAPI,
-} from "../ts-types/grid-engine";
-import type { ColorPropertyDefine, ColumnIconOption } from "../ts-types/define";
+	CellContext,
+	GridCanvasHelperAPI,
+	ListGridAPI,
+} from '../ts-types/grid-engine';
+import type { ColorPropertyDefine, ColumnIconOption } from '../ts-types/define';
 import type {
-  ColumnStyle,
-  ColumnStyleOption,
-  HeaderStyleOption,
-} from "../ts-types/column";
-import type { Message } from "../ts-types/data";
+	ColumnStyle,
+	ColumnStyleOption,
+	HeaderStyleOption,
+} from '../ts-types/column';
+import type { Message } from '../ts-types/data';
 
 export interface MessageHandler<T> {
   drawCellMessage(
@@ -107,15 +107,15 @@ export type CheckHeaderState = {
 };
 
 export interface GridInternal<T> extends ListGridAPI<T> {
-  "$$$$col.fadein_stateID symbol$$$$"?: ColumnFadeinState;
-  "$$$$btncol.stateID symbol$$$$"?: ButtonColumnState;
-  "$$$$chkcol.stateID symbol$$$$"?: CheckColumnState;
-  "$$$$rdcol.stateID symbol$$$$"?: RadioColumnState;
-  "$$$$branch_graph_col.stateID symbol$$$$"?: BranchGraphColumnState<T>;
-  "$$$$inline_menu_editor.stateID symbol$$$$"?: InputEditorState;
-  "$$$$inline_input_editor.stateID symbol$$$$"?: InputEditorState;
-  "$$$$small_dialog_input_editor.stateID symbol$$$$"?: InputEditorState;
-  "$$$$check_header.stateID symbol$$$$"?: CheckHeaderState;
+  '$$$$col.fadein_stateID symbol$$$$'?: ColumnFadeinState;
+  '$$$$btncol.stateID symbol$$$$'?: ButtonColumnState;
+  '$$$$chkcol.stateID symbol$$$$'?: CheckColumnState;
+  '$$$$rdcol.stateID symbol$$$$'?: RadioColumnState;
+  '$$$$branch_graph_col.stateID symbol$$$$'?: BranchGraphColumnState<T>;
+  '$$$$inline_menu_editor.stateID symbol$$$$'?: InputEditorState;
+  '$$$$inline_input_editor.stateID symbol$$$$'?: InputEditorState;
+  '$$$$small_dialog_input_editor.stateID symbol$$$$'?: InputEditorState;
+  '$$$$check_header.stateID symbol$$$$'?: CheckHeaderState
 }
 
 export interface DataTransferOption<T, V> {
@@ -128,7 +128,7 @@ export interface DataTransferOption<T, V> {
 export type DataTransfer = <T, V>(option: DataTransferOption<T, V>) => V
 
 export interface AfterConvertInternalOption<T> {
-  rawValue: unknown,
-  cell: CellAddress,
+  rawValue: unknown
+  cell: CellAddress
   grid: ListGridAPI<T>
 }

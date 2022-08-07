@@ -1,4 +1,4 @@
-import * as canvashelper from "./tools/canvashelper";
+import * as canvashelper from './tools/canvashelper';
 
 /**
  * tools

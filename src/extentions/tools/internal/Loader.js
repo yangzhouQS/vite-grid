@@ -8,6 +8,7 @@ class Loader extends Thenable {
 			thenable.then(resolve);
 		});
 	}
+
 	get() {
 		if (this._loaded) {
 			return this._result;

@@ -1,12 +1,12 @@
 import type {
-  ColumnIconOption,
-  FontIcon,
-  ImageIcon,
-  NamedIcon,
-  PathIcon,
-  SvgIcon,
-} from "../ts-types";
-import type { SimpleColumnIconOption } from "../ts-types-internal";
+	ColumnIconOption,
+	FontIcon,
+	ImageIcon,
+	NamedIcon,
+	PathIcon,
+	SvgIcon,
+} from '../ts-types';
+import type { SimpleColumnIconOption } from '../ts-types-internal';
 
 type ColumnIconArrayOption = {
   content?: (string | null)[];
@@ -31,31 +31,31 @@ type IconPropKey = (
 ) &
   keyof SimpleColumnIconOption;
 const ICON_PROP_KEYS: IconPropKey[] = [
-  "content",
-  "font",
-  "color",
-  "className",
-  "tagName",
-  "isLiga",
-  "width",
-  "src",
-  "svg",
-  "name",
-  "path",
+	'content',
+	'font',
+	'color',
+	'className',
+	'tagName',
+	'isLiga',
+	'width',
+	'src',
+	'svg',
+	'name',
+	'path',
 ];
 
 function quote(name: string): string {
-  const quoted = [];
-  const split = name.split(/,\s*/);
-  for (let i = 0; i < split.length; i++) {
-    const part = split[i].replace(/['"]/g, "");
-    if (part.indexOf(" ") === -1 && !/^\d/.test(part)) {
-      quoted.push(part);
-    } else {
-      quoted.push(`'${part}'`);
-    }
-  }
-  return quoted.join(",");
+	const quoted = [];
+	const split = name.split(/,\s*/);
+	for (let i = 0; i < split.length; i++) {
+		const part = split[i].replace(/['"]/g, '');
+		if (part.indexOf(' ') === -1 && !/^\d/.test(part)) {
+			quoted.push(part);
+		} else {
+			quoted.push(`'${part}'`);
+		}
+	}
+	return quoted.join(',');
 }
 
 const doms: {
@@ -68,158 +68,158 @@ const props: {
 } = {};
 
 export function getIconProps(
-  tagName: string,
-  className: string
+	tagName: string,
+	className: string
 ): SimpleColumnIconOption {
-  const tagProps = props[tagName] || (props[tagName] = {});
-  if (tagProps[className]) {
-    return tagProps[className];
-  }
-  const dom =
+	const tagProps = props[tagName] || (props[tagName] = {});
+	if (tagProps[className]) {
+		return tagProps[className];
+	}
+	const dom =
     doms[tagName] || (doms[tagName] = document.createElement(tagName));
-  dom.className = className;
-  document.body.appendChild(dom);
-  try {
-    const beforeStyle = (document.defaultView || window).getComputedStyle(
-      dom,
-      "::before"
-    );
-    let content = beforeStyle.getPropertyValue("content");
-    if (content.length >= 3 && (content[0] === '"' || content[0] === "'")) {
-      if (content[0] === content[content.length - 1]) {
-        content = content.substr(1, content.length - 2);
-      }
-    }
-    let font = beforeStyle.getPropertyValue("font");
-    if (!font) {
-      font = `${beforeStyle.getPropertyValue(
-        "font-style"
-      )} ${beforeStyle.getPropertyValue(
-        "font-variant"
-      )} ${beforeStyle.getPropertyValue(
-        "font-weight"
-      )} ${beforeStyle.getPropertyValue(
-        "font-size"
-      )}/${beforeStyle.getPropertyValue("line-height")} ${quote(
-        beforeStyle.getPropertyValue("font-family")
-      )}`;
-    }
-    const color = beforeStyle.getPropertyValue("color");
-    const width = dom.clientWidth;
-    const isLiga =
-      (beforeStyle.getPropertyValue("font-feature-settings") || "").indexOf(
-        "liga"
+	dom.className = className;
+	document.body.appendChild(dom);
+	try {
+		const beforeStyle = (document.defaultView || window).getComputedStyle(
+			dom,
+			'::before'
+		);
+		let content = beforeStyle.getPropertyValue('content');
+		if (content.length >= 3 && (content[0] === '"' || content[0] === '\'')) {
+			if (content[0] === content[content.length - 1]) {
+				content = content.substr(1, content.length - 2);
+			}
+		}
+		let font = beforeStyle.getPropertyValue('font');
+		if (!font) {
+			font = `${beforeStyle.getPropertyValue(
+				'font-style'
+			)} ${beforeStyle.getPropertyValue(
+				'font-variant'
+			)} ${beforeStyle.getPropertyValue(
+				'font-weight'
+			)} ${beforeStyle.getPropertyValue(
+				'font-size'
+			)}/${beforeStyle.getPropertyValue('line-height')} ${quote(
+				beforeStyle.getPropertyValue('font-family')
+			)}`;
+		}
+		const color = beforeStyle.getPropertyValue('color');
+		const width = dom.clientWidth;
+		const isLiga =
+      (beforeStyle.getPropertyValue('font-feature-settings') || '').indexOf(
+      	'liga'
       ) > -1;
 
-    return (tagProps[className] = {
-      content,
-      font,
-      color,
-      width,
-      isLiga,
-    });
-  } finally {
-    document.body.removeChild(dom);
-  }
+		return (tagProps[className] = {
+			content,
+			font,
+			color,
+			width,
+			isLiga,
+		});
+	} finally {
+		document.body.removeChild(dom);
+	}
 }
 
 function toPropArray<T>(prop: T, count: number): (T | null)[] {
-  const result: (T | null)[] = [];
-  if (Array.isArray(prop)) {
-    result.push(...prop);
-    for (let i = prop.length; i < count; i++) {
-      result.push(null);
-    }
-  } else {
-    for (let i = 0; i < count; i++) {
-      result.push(prop);
-    }
-  }
-  return result;
+	const result: (T | null)[] = [];
+	if (Array.isArray(prop)) {
+		result.push(...prop);
+		for (let i = prop.length; i < count; i++) {
+			result.push(null);
+		}
+	} else {
+		for (let i = 0; i < count; i++) {
+			result.push(prop);
+		}
+	}
+	return result;
 }
 
 function toSimpleArray(
-  iconProps: ColumnIconOption<unknown> | ColumnIconOption<unknown>[]
+	iconProps: ColumnIconOption<unknown> | ColumnIconOption<unknown>[]
 ): SimpleColumnIconOption[] {
-  if (!iconProps) {
-    return iconProps;
-  } else if (Array.isArray(iconProps)) {
-    return iconProps;
-  }
+	if (!iconProps) {
+		return iconProps;
+	} else if (Array.isArray(iconProps)) {
+		return iconProps;
+	}
 
-  const workData = {} as Required<ColumnIconArrayOption>;
+	const workData = {} as Required<ColumnIconArrayOption>;
 
-  let count = 0;
-  ICON_PROP_KEYS.forEach((k) => {
+	let count = 0;
+	ICON_PROP_KEYS.forEach((k) => {
     
-    const prop = (iconProps as any)[k];
-    if (prop) {
-      if (Array.isArray(prop)) {
-        count = Math.max(count, prop.length);
-      } else {
-        count = Math.max(count, 1);
-      }
-    }
-  });
+		const prop = (iconProps as any)[k];
+		if (prop) {
+			if (Array.isArray(prop)) {
+				count = Math.max(count, prop.length);
+			} else {
+				count = Math.max(count, 1);
+			}
+		}
+	});
 
-  ICON_PROP_KEYS.forEach((k) => {
+	ICON_PROP_KEYS.forEach((k) => {
     
-    const arr = toPropArray((iconProps as any)[k], count);
+		const arr = toPropArray((iconProps as any)[k], count);
     
-    (workData as any)[k] = arr;
-  });
+		(workData as any)[k] = arr;
+	});
 
-  const result: SimpleColumnIconOption[] = [];
-  for (let i = 0; i < count; i++) {
-    const data = {} as SimpleColumnIconOption;
-    ICON_PROP_KEYS.forEach((k) => {
+	const result: SimpleColumnIconOption[] = [];
+	for (let i = 0; i < count; i++) {
+		const data = {} as SimpleColumnIconOption;
+		ICON_PROP_KEYS.forEach((k) => {
       
-      const val = (workData as any)[k][i];
+			const val = (workData as any)[k][i];
       
-      (data as any)[k] = val;
-    });
-    result.push(data);
-  }
-  return result;
+			(data as any)[k] = val;
+		});
+		result.push(data);
+	}
+	return result;
 }
 
 function normarize(iconProps: SimpleColumnIconOption): SimpleColumnIconOption {
-  const data: SimpleColumnIconOption = {};
-  for (const k in iconProps) {
-    if (k === "className") {
-      continue;
-    }
-    if (isIconKey(k)) {
+	const data: SimpleColumnIconOption = {};
+	for (const k in iconProps) {
+		if (k === 'className') {
+			continue;
+		}
+		if (isIconKey(k)) {
       
-      data[k] = iconProps[k] as any;
-    }
-  }
-  if (iconProps.className) {
-    const prop = getIconProps(iconProps.tagName || "i", iconProps.className);
-    for (const k in prop) {
-      if (isIconKey(k)) {
-        if (iconProps[k] == null) {
+			data[k] = iconProps[k] as any;
+		}
+	}
+	if (iconProps.className) {
+		const prop = getIconProps(iconProps.tagName || 'i', iconProps.className);
+		for (const k in prop) {
+			if (isIconKey(k)) {
+				if (iconProps[k] == null) {
           
-          data[k] = prop[k] as any;
-        }
-      }
-    }
-  }
-  return data;
+					data[k] = prop[k] as any;
+				}
+			}
+		}
+	}
+	return data;
 }
 
 export function toNormarizeArray(
-  iconProps: ColumnIconOption<unknown> | ColumnIconOption<unknown>[]
+	iconProps: ColumnIconOption<unknown> | ColumnIconOption<unknown>[]
 ): SimpleColumnIconOption[] {
-  const icons = toSimpleArray(iconProps);
-  if (!icons) {
-    return icons;
-  }
-  return icons.map((icon) => normarize(icon));
+	const icons = toSimpleArray(iconProps);
+	if (!icons) {
+		return icons;
+	}
+	return icons.map((icon) => normarize(icon));
 }
 export const iconPropKeys = ICON_PROP_KEYS;
 
 function isIconKey(k: string): k is IconPropKey {
   
-  return ICON_PROP_KEYS.indexOf(k as any) >= 0;
+	return ICON_PROP_KEYS.indexOf(k as any) >= 0;
 }

@@ -1,4 +1,4 @@
-import type { ColorPropertyDefine, ColorsPropertyDefine } from "./define";
+import type { ColorPropertyDefine, ColorsPropertyDefine } from './define';
 
 // ****** Plugin Icons *******
 export interface IconDefine {
@@ -52,9 +52,9 @@ export interface ThemeDefine {
 }
 
 export type RequiredThemeDefine = Required<ThemeDefine> & {
-  checkbox: Required<ThemeDefine["checkbox"]>;
-  radioButton: Required<ThemeDefine["radioButton"]>;
-  button: Required<ThemeDefine["button"]>;
-  header: Required<ThemeDefine["header"]>;
-  messages: Required<ThemeDefine["messages"]>;
+  checkbox: Required<ThemeDefine['checkbox']>;
+  radioButton: Required<ThemeDefine['radioButton']>;
+  button: Required<ThemeDefine['button']>;
+  header: Required<ThemeDefine['header']>;
+  messages: Required<ThemeDefine['messages']>;
 };

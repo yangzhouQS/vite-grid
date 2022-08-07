@@ -1,28 +1,28 @@
 import type {
-  AnyFunction,
-  ColorDef,
-  MaybePromise,
-  MaybePromiseOrUndef,
-  RectProps,
-} from "./base";
+	AnyFunction,
+	ColorDef,
+	MaybePromise,
+	MaybePromiseOrUndef,
+	RectProps,
+} from './base';
 import type {
-  AnyListener,
-  DrawGridEventHandlersEventMap,
-  DrawGridEventHandlersReturnMap,
-  EventListenerId,
-  ListGridEventHandlersEventMap,
-  ListGridEventHandlersReturnMap,
-} from "./events";
-import type { CellAddress, CellRange, FieldData, FieldDef } from "./grid";
+	AnyListener,
+	DrawGridEventHandlersEventMap,
+	DrawGridEventHandlersReturnMap,
+	EventListenerId,
+	ListGridEventHandlersEventMap,
+	ListGridEventHandlersReturnMap,
+} from './events';
+import type { CellAddress, CellRange, FieldData, FieldDef } from './grid';
 import type {
-  ColorPropertyDefine,
-  ColorsPropertyDefine,
-  FontPropertyDefine,
-  LineClamp,
-  TextOverflow,
-} from "./define";
-import type { RequiredThemeDefine } from "./plugin";
-import type { SimpleColumnIconOption } from "../ts-types-internal/data";
+	ColorPropertyDefine,
+	ColorsPropertyDefine,
+	FontPropertyDefine,
+	LineClamp,
+	TextOverflow,
+} from './define';
+import type { RequiredThemeDefine } from './plugin';
+import type { SimpleColumnIconOption } from '../ts-types-internal/data';
 
 export type LayoutObjectId = number | string | symbol;
 
@@ -63,7 +63,7 @@ export interface DrawGridAPI {
   ): EventListenerId;
   listen(type: string, listener: AnyListener): EventListenerId;
 
-  configure(name: "fadeinWhenCallbackInPromise", value?: boolean): boolean;
+  configure(name: 'fadeinWhenCallbackInPromise', value?: boolean): boolean;
 
   updateSize(): void;
   updateScroll(): boolean;
@@ -135,14 +135,14 @@ export interface DataSourceAPI<T> {
     field: F,
     value: any
   ): MaybePromise<boolean>;
-  sort(field: FieldDef<T>, order: "desc" | "asc"): MaybePromise<void>;
+  sort(field: FieldDef<T>, order: 'desc' | 'asc'): MaybePromise<void>;
   dataSource: DataSourceAPI<T>;
 }
 
 export interface SortState {
   col: number;
   row: number;
-  order: "asc" | "desc" | undefined;
+  order: 'asc' | 'desc' | undefined;
 }
 
 export type HeaderValues = Map<any, any>;
@@ -197,7 +197,9 @@ export interface ListGridAPI<T> extends DrawGridAPI {
   getColumnType(col: number, row: number): ColumnTypeAPI;
 }
 
-export interface ColumnTypeAPI {}
+export interface ColumnTypeAPI {
+  //
+}
 
 export type SetPasteValueTestData<T> = CellAddress & {
   grid: ListGridAPI<T>;

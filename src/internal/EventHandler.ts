@@ -1,6 +1,6 @@
-import { AnyFunction, EventListenerId } from "@/ts-types";
-import { EventTarget as CustomEventTarget } from "../core/EventTarget";
-import { each } from "./utils";
+import { AnyFunction, EventListenerId } from '@/ts-types';
+import { EventTarget as CustomEventTarget } from '../core/EventTarget';
+import { each } from './utils';
 
 
 let nextId = 1;
@@ -19,11 +19,11 @@ type EventListenerObject = {
 };
 
 export class EventHandler {
-  private _listeners: {
+	private _listeners: {
     [key: string]: EventListenerObject;
   } = {};
 
-  on<TYPE extends keyof GlobalEventHandlersEventMap>(
+	on<TYPE extends keyof GlobalEventHandlersEventMap>(
     target: EventHandlerTarget,
     type: TYPE,
     
@@ -31,35 +31,35 @@ export class EventHandler {
     
     ...options: any[]
   ): EventListenerId;
-  on(
+	on(
     target: EventHandlerTarget,
     type: string,
     listener: Listener,
     
     ...options: any[]
   ): EventListenerId;
-  on(
-    target: EventHandlerTarget,
-    type: string,
-    listener: Listener,
+	on(
+		target: EventHandlerTarget,
+		type: string,
+		listener: Listener,
     
-    ...options: any[]
-  ): EventListenerId {
-    if (target.addEventListener) {
-      target.addEventListener(type, listener, ...(options as []));
-    }
-    const obj = {
-      target,
-      type,
-      listener,
-      options,
-    };
-    const id = nextId++;
-    this._listeners[id] = obj;
-    return id;
-  }
+		...options: any[]
+	): EventListenerId {
+		if (target.addEventListener) {
+			target.addEventListener(type, listener, ...(options as []));
+		}
+		const obj = {
+			target,
+			type,
+			listener,
+			options,
+		};
+		const id = nextId++;
+		this._listeners[id] = obj;
+		return id;
+	}
 
-  once<TYPE extends keyof GlobalEventHandlersEventMap>(
+	once<TYPE extends keyof GlobalEventHandlersEventMap>(
     target: EventHandlerTarget,
     type: TYPE,
     
@@ -67,116 +67,116 @@ export class EventHandler {
     
     ...options: any[]
   ): EventListenerId;
-  once(
+	once(
     target: EventHandlerTarget,
     type: string,
     listener: Listener,
     ...options: (boolean | AddEventListenerOptions)[]
   ): EventListenerId;
-  once(
-    target: EventHandlerTarget,
-    type: string,
-    listener: Listener,
-    ...options: (boolean | AddEventListenerOptions)[]
-  ): EventListenerId {
-    const id = this.on(
-      target,
-      type,
-      (...args) => {
-        this.off(id);
-        listener(...args);
-      },
-      ...options
-    );
-    return id;
-  }
+	once(
+		target: EventHandlerTarget,
+		type: string,
+		listener: Listener,
+		...options: (boolean | AddEventListenerOptions)[]
+	): EventListenerId {
+		const id = this.on(
+			target,
+			type,
+			(...args) => {
+				this.off(id);
+				listener(...args);
+			},
+			...options
+		);
+		return id;
+	}
 
-  tryWithOffEvents(
-    target: EventHandlerTarget,
-    type: string,
-    call: () => void
-  ): void {
-    const list: EventListenerObject[] = [];
-    try {
-      each(this._listeners, (obj) => {
-        if (obj.target === target && obj.type === type) {
-          if (obj.target.removeEventListener) {
-            obj.target.removeEventListener(
-              obj.type,
-              obj.listener,
-              ...(obj.options as [])
-            );
-          }
-          list.push(obj);
-        }
-      });
-      call();
-    } finally {
-      list.forEach((obj) => {
-        if (obj.target.addEventListener) {
-          obj.target.addEventListener(
-            obj.type,
-            obj.listener,
-            ...(obj.options as [])
-          );
-        }
-      });
-    }
-  }
+	tryWithOffEvents(
+		target: EventHandlerTarget,
+		type: string,
+		call: () => void
+	): void {
+		const list: EventListenerObject[] = [];
+		try {
+			each(this._listeners, (obj) => {
+				if (obj.target === target && obj.type === type) {
+					if (obj.target.removeEventListener) {
+						obj.target.removeEventListener(
+							obj.type,
+							obj.listener,
+							...(obj.options as [])
+						);
+					}
+					list.push(obj);
+				}
+			});
+			call();
+		} finally {
+			list.forEach((obj) => {
+				if (obj.target.addEventListener) {
+					obj.target.addEventListener(
+						obj.type,
+						obj.listener,
+						...(obj.options as [])
+					);
+				}
+			});
+		}
+	}
 
-  off(id: EventListenerId | null | undefined): void {
-    if (id == null) {
-      return;
-    }
-    const obj = this._listeners[id];
-    if (!obj) {
-      return;
-    }
-    delete this._listeners[id];
-    if (obj.target.removeEventListener) {
-      obj.target.removeEventListener(
-        obj.type,
-        obj.listener,
-        ...(obj.options as [])
-      );
-    }
-  }
+	off(id: EventListenerId | null | undefined): void {
+		if (id == null) {
+			return;
+		}
+		const obj = this._listeners[id];
+		if (!obj) {
+			return;
+		}
+		delete this._listeners[id];
+		if (obj.target.removeEventListener) {
+			obj.target.removeEventListener(
+				obj.type,
+				obj.listener,
+				...(obj.options as [])
+			);
+		}
+	}
 
   
-  fire(target: EventTarget, type: string, ...args: any[]): void {
-    each(this._listeners, (obj) => {
-      if (obj.target === target && obj.type === type) {
-        obj.listener.call(obj.target, ...args);
-      }
-    });
-  }
+	fire(target: EventTarget, type: string, ...args: any[]): void {
+		each(this._listeners, (obj) => {
+			if (obj.target === target && obj.type === type) {
+				obj.listener.call(obj.target, ...args);
+			}
+		});
+	}
 
-  hasListener(target: EventTarget, type: string): boolean {
-    let result = false;
-    each(this._listeners, (obj) => {
-      if (obj.target === target && obj.type === type) {
-        result = true;
-      }
-    });
-    return result;
-  }
+	hasListener(target: EventTarget, type: string): boolean {
+		let result = false;
+		each(this._listeners, (obj) => {
+			if (obj.target === target && obj.type === type) {
+				result = true;
+			}
+		});
+		return result;
+	}
 
-  clear(): void {
-    each(this._listeners, (obj) => {
-      if (obj.target.removeEventListener) {
-        obj.target.removeEventListener(
-          obj.type,
-          obj.listener,
-          ...(obj.options as [])
-        );
-      }
-    });
-    this._listeners = {};
-  }
+	clear(): void {
+		each(this._listeners, (obj) => {
+			if (obj.target.removeEventListener) {
+				obj.target.removeEventListener(
+					obj.type,
+					obj.listener,
+					...(obj.options as [])
+				);
+			}
+		});
+		this._listeners = {};
+	}
 
-  dispose(): void {
-    this.clear();
+	dispose(): void {
+		this.clear();
     
-    (this as any)._listeners = null;
-  }
+		(this as any)._listeners = null;
+	}
 }

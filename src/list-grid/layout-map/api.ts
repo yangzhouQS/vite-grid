@@ -1,26 +1,26 @@
-import type * as headerAction from "../../header/action";
-import type * as headerType from "../../header/type";
+import type * as headerAction from '../../header/action';
+import type * as headerType from '../../header/type';
 import type {
-  CellRange,
-  ColumnActionOption,
-  ColumnIconOption,
-  ColumnStyleOption,
-  ColumnTypeOption,
-  FieldDef,
-  HeaderActionOption,
-  HeaderStyleOption,
-  HeaderTypeOption,
-  LayoutObjectId,
-  ListGridAPI,
-  Message,
-} from "@/ts-types";
-import type { BaseAction } from "@/columns/action";
-import type { BaseColumn } from "@/columns/type/BaseColumn";
-import type { BaseStyle as HeaderBaseStyle } from "../../header/style";
+	CellRange,
+	ColumnActionOption,
+	ColumnIconOption,
+	ColumnStyleOption,
+	ColumnTypeOption,
+	FieldDef,
+	HeaderActionOption,
+	HeaderStyleOption,
+	HeaderTypeOption,
+	LayoutObjectId,
+	ListGridAPI,
+	Message,
+} from '@/ts-types';
+import type { BaseAction } from '@/columns/action';
+import type { BaseColumn } from '@/columns/type/BaseColumn';
+import type { BaseStyle as HeaderBaseStyle } from '../../header/style';
 
 export type OldSortOption<T> =
   | boolean
-  | ((order: "asc" | "desc", col: number, grid: ListGridAPI<T>) => void);
+  | ((order: 'asc' | 'desc', col: number, grid: ListGridAPI<T>) => void);
 
 export interface BaseHeaderDefine<T> {
   caption?: string | (() => string);
@@ -31,8 +31,7 @@ export interface BaseHeaderDefine<T> {
   sort?: OldSortOption<T>;
 }
 
-export interface HeaderDefine<T> extends BaseHeaderDefine<T> {
-}
+export type HeaderDefine<T> = BaseHeaderDefine<T>
 
 export interface ColumnDefine<T> extends BaseHeaderDefine<T> {
   field?: FieldDef<T>;

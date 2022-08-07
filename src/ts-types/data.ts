@@ -1,5 +1,5 @@
 export interface MessageObject {
-  type: "error" | "info" | "warning";
+  type: 'error' | 'info' | 'warning';
   message: string | null;
   original?: Message;
 }

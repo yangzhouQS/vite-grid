@@ -1,7 +1,7 @@
-import type { ColumnMenuItemOptions } from "../define";
-import { CellAddress } from "@/ts-types";
-import { ListGrid } from "@/ListGrid";
-import { DataTransfer } from "@/ts-types-internal";
+import type { ColumnMenuItemOptions } from '../define';
+import { CellAddress } from '@/ts-types';
+import { ListGrid } from '@/ListGrid';
+import { DataTransfer } from '@/ts-types-internal';
 
 export interface BaseColumnOption {
   fadeinWhenCallbackInPromise?: boolean | null;
@@ -43,18 +43,16 @@ export interface PercentCompleteBarColumnOption extends BaseColumnOption {
 }
 
 export interface BranchGraphColumnOption extends BaseColumnOption {
-  start?: "top" | "bottom";
+  start?: 'top' | 'bottom';
   cache?: boolean;
 }
 
 // 自定义列类型
-export interface RowIndexOption extends BaseColumnOption {
-
-}
+export type RowIndexOption = BaseColumnOption
 
 export type SimpleBranchGraphCommand =
   | {
-  command: "branch";
+  command: 'branch';
   branch:
     | string
     | {
@@ -63,18 +61,18 @@ export type SimpleBranchGraphCommand =
   };
 }
   | {
-  command: "commit";
+  command: 'commit';
   branch: string;
 }
   | {
-  command: "merge";
+  command: 'merge';
   branch: {
     from: string;
     to: string;
   };
 }
   | {
-  command: "tag";
+  command: 'tag';
   branch: string;
   tag: string;
 };
@@ -85,23 +83,23 @@ export type BranchGraphCommand =
   | SimpleBranchGraphCommand[];
 
 export type ColumnTypeOption =
-  | "DEFAULT"
-  | "default"
-  | "NUMBER"
-  | "number"
-  | "CHECK"
-  | "check"
-  | "BUTTON"
-  | "button"
-  | "IMAGE"
-  | "image"
-  | "MULTILINETEXT"
-  | "multilinetext";
+  | 'DEFAULT'
+  | 'default'
+  | 'NUMBER'
+  | 'number'
+  | 'CHECK'
+  | 'check'
+  | 'BUTTON'
+  | 'button'
+  | 'IMAGE'
+  | 'image'
+  | 'MULTILINETEXT'
+  | 'multilinetext';
 
 export type HeaderTypeOption =
-  | "DEFAULT"
-  | "default"
-  | "SORT"
-  | "sort"
-  | "CHECK"
-  | "check";
+  | 'DEFAULT'
+  | 'default'
+  | 'SORT'
+  | 'sort'
+  | 'CHECK'
+  | 'check';

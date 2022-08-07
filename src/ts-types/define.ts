@@ -1,5 +1,5 @@
-import type { ColorDef } from "./base";
-import type { ListGridAPI } from "./grid-engine";
+import type { ColorDef } from './base';
+import type { ListGridAPI } from './grid-engine';
 
 // ****** Column Icon Options *******
 export interface FontIcon<T> {
@@ -75,8 +75,8 @@ export interface ColumnMenuItemObjectOptions {
 }
 
 // ****** TextStyle Options *******
-export type TextOverflow = "clip" | "ellipsis" | string /* a char */;
-export type LineClamp = number | "auto";
+export type TextOverflow = 'clip' | 'ellipsis' | string /* a char */;
+export type LineClamp = number | 'auto';
 
 // ****** Color Options *******
 export interface StylePropertyFunctionArg {

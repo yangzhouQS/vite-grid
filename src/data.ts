@@ -1,9 +1,9 @@
 import {
-  DataSource,
-  // DataSourceParam
-} from "./data/DataSource";
-import { CachedDataSource } from "./data/CachedDataSource";
-import { FilterDataSource } from "./data/FilterDataSource";
+	DataSource,
+	// DataSourceParam
+} from './data/DataSource';
+import { CachedDataSource } from './data/CachedDataSource';
+import { FilterDataSource } from './data/FilterDataSource';
 
 /**
  * data modules
@@ -11,9 +11,9 @@ import { FilterDataSource } from "./data/FilterDataSource";
  * @memberof cheetahGrid
  */
 export {
-  DataSource,
-  CachedDataSource,
-  FilterDataSource,
-  //types
-  // DataSourceParam,
+	DataSource,
+	CachedDataSource,
+	FilterDataSource,
+	//types
+	// DataSourceParam,
 };

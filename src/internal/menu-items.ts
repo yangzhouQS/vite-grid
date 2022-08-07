@@ -1,15 +1,15 @@
-import type { ColumnMenuItemOption, ColumnMenuItemOptions } from "../ts-types";
+import type { ColumnMenuItemOption, ColumnMenuItemOptions } from '../ts-types';
 
 function extend<T, U>(a: T, b: U): T & U {
   
-  const o: any = {};
-  for (const k in a) {
-    o[k] = a[k];
-  }
-  for (const k in b) {
-    o[k] = b[k];
-  }
-  return o;
+	const o: any = {};
+	for (const k in a) {
+		o[k] = a[k];
+	}
+	for (const k in b) {
+		o[k] = b[k];
+	}
+	return o;
 }
 
 /**
@@ -19,30 +19,30 @@ function extend<T, U>(a: T, b: U): T & U {
  * @private
  */
 export function normalize(
-  options: ColumnMenuItemOptions | undefined
+	options: ColumnMenuItemOptions | undefined
 ): ColumnMenuItemOption[] {
-  if (!options) {
-    return [];
-  }
-  if (Array.isArray(options)) {
+	if (!options) {
+		return [];
+	}
+	if (Array.isArray(options)) {
     
-    return (options as any).map(
+		return (options as any).map(
       
-      (e: any): ColumnMenuItemOption =>
-        extend(e, { label: e.caption || e.label })
-    );
-  }
-  if (typeof options === "string") {
-    return normalize(JSON.parse(options));
-  }
-  const result = [];
-  for (const k in options) {
-    result.push({
-      value: k,
-      label: options[k],
-    });
-  }
-  return result;
+			(e: any): ColumnMenuItemOption =>
+				extend(e, { label: e.caption || e.label })
+		);
+	}
+	if (typeof options === 'string') {
+		return normalize(JSON.parse(options));
+	}
+	const result = [];
+	for (const k in options) {
+		result.push({
+			value: k,
+			label: options[k],
+		});
+	}
+	return result;
 }
 
 /**
@@ -52,14 +52,14 @@ export function normalize(
  * @private
  */
 export function normalizeToFn<T>(
-  options:
+	options:
     | ColumnMenuItemOptions
     | ((record: T | undefined) => ColumnMenuItemOptions)
     | undefined
 ): (record: T | undefined) => ColumnMenuItemOption[] {
-  if (typeof options === "function") {
-    return (record: T | undefined): ColumnMenuItemOption[] =>
-      normalize(options(record));
-  }
-  return (): ColumnMenuItemOption[] => normalize(options);
+	if (typeof options === 'function') {
+		return (record: T | undefined): ColumnMenuItemOption[] =>
+			normalize(options(record));
+	}
+	return (): ColumnMenuItemOption[] => normalize(options);
 }

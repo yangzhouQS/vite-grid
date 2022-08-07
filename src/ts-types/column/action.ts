@@ -1,7 +1,7 @@
-import type { CellAddress } from "../grid";
-import type { ColumnMenuItemOptions } from "../define";
-import type { ListGridAPI } from "../grid-engine";
-import type { MaybePromise } from "../base";
+import type { CellAddress } from '../grid';
+import type { ColumnMenuItemOptions } from '../define';
+import type { ListGridAPI } from '../grid-engine';
+import type { MaybePromise } from '../base';
 
 
 export type RecordBoolean<T = any> = boolean | ((record: T) => boolean);
@@ -65,7 +65,7 @@ export interface RadioEditorOption<T> extends EditorOption {
 export type SortOption<T> =
   | boolean
   | ((arg: {
-      order: "asc" | "desc";
+      order: 'asc' | 'desc';
       col: number;
       row: number;
       grid: ListGridAPI<T>;
@@ -75,5 +75,5 @@ export interface SortHeaderActionOption<T> extends BaseActionOption {
   sort?: SortOption<T>;
 }
 
-export type ColumnActionOption = "CHECK" | "check" | "INPUT" | "input";
-export type HeaderActionOption = "CHECK" | "check" | "SORT" | "sort";
+export type ColumnActionOption = 'CHECK' | 'check' | 'INPUT' | 'input';
+export type HeaderActionOption = 'CHECK' | 'check' | 'SORT' | 'sort';
