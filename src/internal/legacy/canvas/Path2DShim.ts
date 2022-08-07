@@ -6,7 +6,7 @@ const parser = new PathCommandsParser();
 type CanvasOperation = keyof CanvasOperations;
 
 export class Path2DShim implements CanvasPath {
-  
+
 	_ops: { op: CanvasOperation; args: any[] }[];
 	arc(...args: Parameters<typeof Path2D.prototype.arc>): void {
 		this._ops.push({ op: 'arc', args });
@@ -50,6 +50,7 @@ export class Path2DShim implements CanvasPath {
 			// } catch (e) {
 			// 	throw e;
 			// }
+			// eslint-disable-next-line no-prototype-builtins
 		} else if (arg.hasOwnProperty('_ops')) {
 			this._ops = [...arg._ops];
 		} else {

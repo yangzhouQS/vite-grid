@@ -42,6 +42,7 @@ function invalidateCell<T>(context: CellContext, grid: ListGridAPI<T>): void {
 	const { col, row } = context;
 	grid.invalidateCell(col, row);
 }
+
 function getColor<T>(
   color: ColorPropertyDefine,
   col: number,
@@ -77,6 +78,7 @@ function getColor<T>(
 		context,
 	});
 }
+
 function getFont<T>(
 	font: FontPropertyDefine | undefined,
 	col: number,
@@ -94,10 +96,9 @@ function getFont<T>(
 		context,
 	});
 }
-function getThemeColor<
-  R,
-  T extends ColorPropertyDefine | ColorsPropertyDefine | string
->(grid: ListGridAPI<R>, ...names: string[]): T {
+
+function getThemeColor<R,
+  T extends ColorPropertyDefine | ColorsPropertyDefine | string>(grid: ListGridAPI<R>, ...names: string[]): T {
 	const gridThemeColor = getChainSafe(grid.theme, ...names);
 	if (gridThemeColor == null) {
 		// use default theme
@@ -121,6 +122,7 @@ function getThemeColor<
 
 	}) as any;
 }
+
 function testFontLoad<T>(
 	font: string | undefined,
 	value: string,
@@ -181,6 +183,7 @@ function drawInlines<T>(
 			//noop
 		}
 	}
+
 	if (inlines.length === 1) {
 		//1件の場合は幅計算が不要なため分岐
 		const inline = inlines[0];
@@ -452,7 +455,7 @@ function _multiInlineRect<T>(
       	? (inlines: Inline[], hasNext: boolean): boolean => {
       		if (buildedMultiInlines.length + 1 >= lineClamp) {
       			if (inlines.length === 0 && hasNext) {
-      				buildedMultiInlines.push([getOverflowInline(textOverflow)]);
+      				buildedMultiInlines.push([ getOverflowInline(textOverflow) ]);
       				grid.setCellOverflowText(
       					col,
       					row,
@@ -467,7 +470,7 @@ function _multiInlineRect<T>(
       				);
       				buildedMultiInlines.push(
       					hasNext && !overflow
-      						? truncInlines.concat([getOverflowInline(textOverflow)])
+      						? truncInlines.concat([ getOverflowInline(textOverflow) ])
       						: truncInlines
       				);
       				if (overflow || hasNext) {
@@ -582,6 +585,7 @@ function _multiInlineRect<T>(
 		paddingBottom -= lineHeight;
 	});
 }
+
 function calcElapsedColor(
 	startColor: string,
 	endColor: string,
@@ -601,8 +605,9 @@ function calcElapsedColor(
 		const diff = start - end;
 		return Math.ceil(start - diff * elapsedTime);
 	};
-	return `rgb(${getRGB('r')}, ${getRGB('g')}, ${getRGB('b')})`;
+	return `rgb(${ getRGB('r') }, ${ getRGB('g') }, ${ getRGB('b') })`;
 }
+
 function drawCheckbox<T>(
 	ctx: CanvasRenderingContext2D,
 	rect: RectProps,
@@ -644,15 +649,15 @@ function drawCheckbox<T>(
 		uncheckBgColor = check
 			? uncheckBgColor
 			: calcElapsedColor(
-          checkBgColor as string,
-          uncheckBgColor as string,
-          animElapsedTime
+        checkBgColor as string,
+        uncheckBgColor as string,
+        animElapsedTime
 			);
 		checkBgColor = check
 			? calcElapsedColor(
-          uncheckBgColor as string,
-          checkBgColor as string,
-          animElapsedTime
+        uncheckBgColor as string,
+        checkBgColor as string,
+        animElapsedTime
 			)
 			: checkBgColor;
 	}
@@ -718,25 +723,25 @@ function drawRadioButton<T>(
 	if (0 < animElapsedTime && animElapsedTime < 1) {
 		borderColor = check
 			? calcElapsedColor(
-          uncheckBorderColor as string,
-          checkBorderColor as string,
-          animElapsedTime
+        uncheckBorderColor as string,
+        checkBorderColor as string,
+        animElapsedTime
 			)
 			: calcElapsedColor(
-          checkBorderColor as string,
-          uncheckBorderColor as string,
-          animElapsedTime
+        checkBorderColor as string,
+        uncheckBorderColor as string,
+        animElapsedTime
 			);
 		bgColor = check
 			? calcElapsedColor(
-          uncheckBgColor as string,
-          checkBgColor as string,
-          animElapsedTime
+        uncheckBgColor as string,
+        checkBgColor as string,
+        animElapsedTime
 			)
 			: calcElapsedColor(
-          checkBgColor as string,
-          uncheckBgColor as string,
-          animElapsedTime
+        checkBgColor as string,
+        uncheckBgColor as string,
+        animElapsedTime
 			);
 	}
 
@@ -752,6 +757,7 @@ function drawRadioButton<T>(
 		}
 	);
 }
+
 class ThemeResolver<T> implements RequiredThemeDefine {
 	private _grid: ListGridAPI<T>;
 	private _checkbox: RequiredThemeDefine['checkbox'] | null = null;
@@ -759,50 +765,62 @@ class ThemeResolver<T> implements RequiredThemeDefine {
 	private _button: RequiredThemeDefine['button'] | null = null;
 	private _header: RequiredThemeDefine['header'] | null = null;
 	private _messages: RequiredThemeDefine['messages'] | null = null;
+
 	constructor(grid: ListGridAPI<T>) {
 		this._grid = grid;
 	}
-	getThemeColor<
-    T extends ColorPropertyDefine | ColorsPropertyDefine | FontPropertyDefine
-  >(...name: string[]): T {
+
+	getThemeColor<T extends ColorPropertyDefine | ColorsPropertyDefine | FontPropertyDefine>(...name: string[]): T {
 		return getThemeColor(this._grid, ...name);
 	}
+
 	get font(): string {
 		return getThemeColor(this._grid, 'font');
 	}
+
 	get underlayBackgroundColor(): string {
 		return getThemeColor(this._grid, 'underlayBackgroundColor');
 	}
+
 	// color
 	get color(): ColorPropertyDefine {
 		return getThemeColor(this._grid, 'color');
 	}
+
 	get frozenRowsColor(): ColorPropertyDefine {
 		return getThemeColor(this._grid, 'frozenRowsColor');
 	}
+
 	// background
 	get defaultBgColor(): ColorPropertyDefine {
 		return getThemeColor(this._grid, 'defaultBgColor');
 	}
+
 	get frozenRowsBgColor(): ColorPropertyDefine {
 		return getThemeColor(this._grid, 'frozenRowsBgColor');
 	}
+
 	get selectionBgColor(): ColorPropertyDefine {
 		return getThemeColor(this._grid, 'selectionBgColor');
 	}
+
 	get highlightBgColor(): ColorPropertyDefine {
 		return getThemeColor(this._grid, 'highlightBgColor');
 	}
+
 	// border
 	get borderColor(): ColorsPropertyDefine {
 		return getThemeColor(this._grid, 'borderColor');
 	}
+
 	get frozenRowsBorderColor(): ColorsPropertyDefine {
 		return getThemeColor(this._grid, 'frozenRowsBorderColor');
 	}
+
 	get highlightBorderColor(): ColorsPropertyDefine {
 		return getThemeColor(this._grid, 'highlightBorderColor');
 	}
+
 	get checkbox(): RequiredThemeDefine['checkbox'] {
 		const grid = this._grid;
 		return (
@@ -820,6 +838,7 @@ class ThemeResolver<T> implements RequiredThemeDefine {
       })
 		);
 	}
+
 	get radioButton(): RequiredThemeDefine['radioButton'] {
 		const grid = this._grid;
 		return (
@@ -843,6 +862,7 @@ class ThemeResolver<T> implements RequiredThemeDefine {
       })
 		);
 	}
+
 	get button(): RequiredThemeDefine['button'] {
 		const grid = this._grid;
 		return (
@@ -857,6 +877,7 @@ class ThemeResolver<T> implements RequiredThemeDefine {
       })
 		);
 	}
+
 	get header(): RequiredThemeDefine['header'] {
 		const grid = this._grid;
 		return (
@@ -868,6 +889,7 @@ class ThemeResolver<T> implements RequiredThemeDefine {
       })
 		);
 	}
+
 	get messages(): RequiredThemeDefine['messages'] {
 		const grid = this._grid;
 		return (
@@ -885,6 +907,17 @@ class ThemeResolver<T> implements RequiredThemeDefine {
       })
 		);
 	}
+
+	defaultColWidth: number;
+	defaultRowHeight: number;
+	focusBgColor: ColorPropertyDefine;
+	frozenRowsFont: string;
+	gridBorderColor: string;
+	gridBorderWidth: number;
+	highlightBorderWidth: number;
+	selectionDragBgColor: ColorPropertyDefine;
+	switch: { uncheckBgColor?: ColorPropertyDefine; checkBgColor?: ColorPropertyDefine; borderColor?: ColorPropertyDefine };
+	tree: { lineColor?: ColorPropertyDefine; buttonColor?: ColorPropertyDefine; buttonBgColor?: ColorPropertyDefine; buttonBorderColor?: ColorPropertyDefine; linkColor?: ColorPropertyDefine };
 }
 
 function strokeRect(
@@ -909,10 +942,12 @@ function strokeRect(
 export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 	private _grid: ListGridAPI<T>;
 	private _theme: RequiredThemeDefine;
+
 	constructor(grid: ListGridAPI<T>) {
 		this._grid = grid;
 		this._theme = new ThemeResolver(grid);
 	}
+
 	createCalculator(
 		context: CellContext,
 		font: string | undefined
@@ -945,6 +980,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			},
 		};
 	}
+
 	getColor(
     color: ColorPropertyDefine,
     col: number,
@@ -965,16 +1001,18 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 	): ColorsDef {
 		return getColor(color, col, row, this._grid, ctx);
 	}
+
 	toBoxArray(
 		obj: ColorsDef
-	): [ColorDef | null, ColorDef | null, ColorDef | null, ColorDef | null] {
+	): [ ColorDef | null, ColorDef | null, ColorDef | null, ColorDef | null ] {
 		return toBoxArray(obj);
 	}
+
 	toBoxPixelArray(
 		value: number | string | (number | string)[],
 		context: CellContext,
 		font: string | undefined
-	): [number, number, number, number] {
+	): [ number, number, number, number ] {
 		if (typeof value === 'string' || Array.isArray(value)) {
 			const calculator = this.createCalculator(context, font);
 			const box = toBoxArray(value);
@@ -987,9 +1025,11 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 		}
 		return toBoxArray(value);
 	}
+
 	get theme(): RequiredThemeDefine {
 		return this._theme;
 	}
+
 	drawWithClip(
 		context: CellContext,
 		draw: (ctx: CanvasRenderingContext2D) => void
@@ -1012,6 +1052,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			ctx.restore();
 		}
 	}
+
 	drawBorderWithClip(
 		context: CellContext,
 		draw: (ctx: CanvasRenderingContext2D) => void
@@ -1046,6 +1087,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			ctx.restore();
 		}
 	}
+
 	text(
 		text: string,
 		context: CellContext,
@@ -1103,6 +1145,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			});
 		});
 	}
+
 	multilineText(
 		multilines: string[],
 		context: CellContext,
@@ -1171,6 +1214,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			});
 		});
 	}
+
 	fillText(
 		text: string,
 		x: number,
@@ -1211,6 +1255,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			ctx.restore();
 		}
 	}
+
 	fillCell(
 		context: CellContext,
 		{
@@ -1228,6 +1273,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			ctx.fill();
 		});
 	}
+
 	fillCellWithState(
 		context: CellContext,
 		option: { fillColor?: ColorPropertyDefine } = {}
@@ -1235,6 +1281,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 		option.fillColor = this.getFillColorState(context, option);
 		this.fillCell(context, option);
 	}
+
 	fillRect(
 		rect: RectProps,
 		context: CellContext,
@@ -1255,6 +1302,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			ctx.restore();
 		}
 	}
+
 	fillRectWithState(
 		rect: RectProps,
 		context: CellContext,
@@ -1264,6 +1312,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 
 		this.fillRect(rect, context, option);
 	}
+
 	getFillColorState(
 		context: CellContext,
 		option: { fillColor?: ColorPropertyDefine } = {}
@@ -1285,6 +1334,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 		}
 		return this.theme.defaultBgColor;
 	}
+
 	border(
 		context: CellContext,
 		{
@@ -1332,6 +1382,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			}
 		});
 	}
+
 	// Unused in main
 	borderWithState(
 		context: CellContext,
@@ -1399,6 +1450,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			}
 		}
 	}
+
 	buildCheckBoxInline(
 		check: boolean,
 		context: CellContext,
@@ -1442,6 +1494,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			});
 		}
 	}
+
 	checkbox(
 		check: boolean,
 		context: CellContext,
@@ -1459,6 +1512,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			drawCheckbox(ctx, context.getRect(), col, row, check, this, option);
 		});
 	}
+
 	radioButton(
 		check: boolean,
 		context: CellContext,
@@ -1477,6 +1531,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			drawRadioButton(ctx, context.getRect(), col, row, check, this, option);
 		});
 	}
+
 	button(
 		caption: string,
 		context: CellContext,
@@ -1546,6 +1601,7 @@ export class GridCanvasHelper<T> implements GridCanvasHelperAPI {
 			);
 		});
 	}
+
 	testFontLoad(
 		font: string | undefined,
 		value: string,
