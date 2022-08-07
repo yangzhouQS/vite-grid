@@ -12,7 +12,8 @@ import type {
   Message,
 } from "@/ts-types";
 import type {
-  ColumnFadeinState, DataTransfer,
+  ColumnFadeinState,
+  DataTransfer,
   DrawCellInfo,
   GridInternal,
 } from "@/ts-types-internal";
@@ -20,6 +21,7 @@ import { isPromise, obj } from "@/internal/utils";
 import { BaseStyle } from "../style/BaseStyle";
 import { animate } from "@/internal/animate";
 import { getColumnFadeinStateId } from "@/internal/symbolManager";
+import { AfterConvertInternalOption } from "@/ts-types-internal";
 
 const { setReadonly } = obj;
 const COLUMN_FADEIN_STATE_ID = getColumnFadeinStateId();
@@ -219,13 +221,18 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
           const actStyle = styleContents.of(style, record, this.StyleClass);
           this.drawInternal(
             // this.convertInternal(val),
-            this.afterConvertInternal(val, getCell(), grid),
+            this.afterConvertInternal<T, V>({
+              rawValue: val,
+              cell: getCell(),
+              grid
+            }),
             currentContext,
             actStyle,
             helper,
             grid,
             info
-          );
+          )
+          ;
           this.drawMessageInternal(
             message,
             currentContext,
@@ -267,7 +274,7 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
       const actStyle = styleContents.of(style, record, this.StyleClass);
       this.drawInternal(
         // this.convertInternal(cellValue),
-        this.afterConvertInternal<any>(cellValue, getCell(), grid),
+        this.afterConvertInternal<T, V>({ rawValue: cellValue, cell: getCell(), grid }),
         context,
         actStyle,
         helper,
@@ -302,21 +309,20 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
 
   abstract clone(): BaseColumn<T, V>;
 
-  /*transfer(value: unknown, newValue: any, cell: CellAddress, grid: ListGridAPI<any>) {
-    debugger
-    return value
-  }*/
+  afterConvertInternal<T, V>(opt: AfterConvertInternalOption<T>): V {
+    const { rawValue, cell, grid } = opt
+    // afterConvertInternal<T>({ rawValue, cell, grid }: { rawValue: unknown, cell: CellAddress, grid: ListGridAPI<T> } = {}) {
 
-  afterConvertInternal(
-    value: unknown,
-    cell: CellAddress,
-    grid: ListGridAPI<T>
-  ) {
-    let displayValue = this.convertInternal(value)
+    let displayValue = this.convertInternal(rawValue)
     if (this.transfer) {
-      displayValue = this.transfer(value, displayValue, cell, grid)
+      displayValue = this.transfer({
+        rawValue,
+        newValue: displayValue,
+        cell,
+        grid
+      })
     }
-    return displayValue
+    return displayValue as V
   }
 
   convertInternal(value: unknown): unknown {

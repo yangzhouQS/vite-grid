@@ -14,7 +14,8 @@ export class RadioColumn<T> extends BaseColumn<T, boolean> {
   clone(): RadioColumn<T> {
     return new RadioColumn(this);
   }
-  convertInternal(value: unknown): boolean {
+
+  convertInternal(value: unknown): unknown {
     return toBoolean(value);
   }
   drawInternal(

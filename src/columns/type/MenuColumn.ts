@@ -97,6 +97,7 @@ export class MenuColumn<T> extends BaseColumn<T, unknown> {
       }
     });
   }
+
   convertInternal(value: unknown): unknown {
     return value;
   }

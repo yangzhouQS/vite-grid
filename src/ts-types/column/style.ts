@@ -3,7 +3,9 @@ import type { ColorDef } from "../base";
 
 export interface ColumnStyle {
   bgColor?: ColorDef;
+
   doChangeStyle(): void;
+
   clone(): ColumnStyle;
 }
 
@@ -22,6 +24,11 @@ export interface StyleOption extends StdBaseStyleOption {
   padding?: number | string | (number | string)[];
   textOverflow?: TextOverflow;
 }
+
+export interface RowIndexStyleOption extends StyleOption {
+
+}
+
 export interface HeaderStdStyleOption extends StdBaseStyleOption {
   color?: ColorDef;
   font?: string;
@@ -69,6 +76,7 @@ export interface MultilineTextHeaderStyleOption extends HeaderStdStyleOption {
 export interface MenuStyleOption extends StyleOption {
   appearance?: "menulist-button" | "none";
 }
+
 export interface ImageStyleOption extends StdBaseStyleOption {
   imageSizing?: "keep-aspect-ratio";
   margin?: number;
@@ -112,22 +120,22 @@ export type ColumnStyleOption =
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
   | ((
-      record: any
-    ) =>
-      | string
-      | ColumnStyle
-      | BaseStyleOption
-      | StdBaseStyleOption
-      | StyleOption
-      | ButtonStyleOption
-      | CheckStyleOption
-      | NumberStyleOption
-      | MultilineTextStyleOption
-      | MenuStyleOption
-      | ImageStyleOption
-      | IconStyleOption
-      | BranchGraphStyleOption
-      | PercentCompleteBarStyleOption);
+  record: any
+) =>
+  | string
+  | ColumnStyle
+  | BaseStyleOption
+  | StdBaseStyleOption
+  | StyleOption
+  | ButtonStyleOption
+  | CheckStyleOption
+  | NumberStyleOption
+  | MultilineTextStyleOption
+  | MenuStyleOption
+  | ImageStyleOption
+  | IconStyleOption
+  | BranchGraphStyleOption
+  | PercentCompleteBarStyleOption);
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export type HeaderStyleOption =
@@ -138,9 +146,9 @@ export type HeaderStyleOption =
   | MultilineTextHeaderStyleOption
   | SortHeaderStyleOption
   | (() =>
-      | ColumnStyle
-      | BaseStyleOption
-      | HeaderStdStyleOption
-      | CheckHeaderStyleOption
-      | MultilineTextHeaderStyleOption
-      | SortHeaderStyleOption);
+  | ColumnStyle
+  | BaseStyleOption
+  | HeaderStdStyleOption
+  | CheckHeaderStyleOption
+  | MultilineTextHeaderStyleOption
+  | SortHeaderStyleOption);

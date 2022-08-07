@@ -15,7 +15,7 @@ const headerColumns: any = [
       textAlign: "center",
     },
   },
-  { field: "userId", caption: "userId", width: 100 },
+  { field: "userId", caption: "userId", width: 360 },
   { field: "username", caption: "username", width: 200 },
   { field: "phone", caption: "phone", width: 200 },
   { field: "email", caption: "Email", width: 250 },

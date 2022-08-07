@@ -14,7 +14,8 @@ export class CheckColumn<T> extends BaseColumn<T, boolean> {
   clone(): CheckColumn<T> {
     return new CheckColumn(this);
   }
-  convertInternal(value: unknown): boolean {
+
+  convertInternal(value: unknown): unknown {
     return toBoolean(value);
   }
   drawInternal(

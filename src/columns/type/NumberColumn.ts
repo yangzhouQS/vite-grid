@@ -28,7 +28,8 @@ export class NumberColumn<T> extends Column<T> {
     c._format = format;
     return c;
   }
-  convertInternal(value: undefined): string {
+
+  convertInternal(value: unknown): unknown {
     const num = Number(value);
     if (isNaN(num)) {
       return super.convertInternal(value);

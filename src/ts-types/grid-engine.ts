@@ -367,3 +367,4 @@ export interface Selection {
   select: CellAddress;
   range: CellRange;
 }
+
