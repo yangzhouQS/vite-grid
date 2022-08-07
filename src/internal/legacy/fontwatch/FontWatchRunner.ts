@@ -4,6 +4,7 @@ import type { AnyFunction } from '@/ts-types';
 
 //http://defghi1977.html.xdomain.jp/tech/canvasMemo/canvasMemo.htm
 import { FontRuler } from './FontRuler';
+import { hasOwnProperty } from '@/internal/utils';
 
 const LastResortFonts: { [key: string]: string } = {
 	SERIF: 'serif',
@@ -126,7 +127,8 @@ class FontWatchRunner {
 
 	widthsMatchLastResortWidths_(a: number, b: number): boolean {
 		for (const font in LastResortFonts) {
-			if (LastResortFonts.hasOwnProperty(font)) {
+			// if (LastResortFonts.hasOwnProperty(font)) {
+			if (hasOwnProperty.call(LastResortFonts,font)) {
 				if (
 					this.widthMatches_(a, LastResortFonts[font]) &&
           this.widthMatches_(b, LastResortFonts[font])

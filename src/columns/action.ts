@@ -8,7 +8,7 @@ import type {
 	InlineMenuEditorOption,
 	RecordBoolean,
 	SmallDialogInputEditorOption,
-} from '../ts-types';
+} from '@/ts-types';
 import { Action } from './action/Action';
 import { BaseAction } from './action/BaseAction';
 import { ButtonAction } from './action/ButtonAction';

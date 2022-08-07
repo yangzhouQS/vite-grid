@@ -1,5 +1,5 @@
-import { LayoutObjectId } from '@/ts-types';
-import { LayoutMapAPI } from './layout-map';
+import type { LayoutObjectId } from '@/ts-types';
+import type { LayoutMapAPI } from './layout-map';
 
 export class LayoutMap<T> implements LayoutMapAPI<T> {
 	private _layoutMap: LayoutMapAPI<T>;

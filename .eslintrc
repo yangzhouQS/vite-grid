@@ -47,8 +47,40 @@
         "allowSingleExtends": false
       }
     ],
+    "no-self-assign": [
+      "error",
+      {
+        "props": true
+      }
+    ],
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "off",
+      {
+        "functions": false,
+        "classes": false
+      }
+    ],
+    "no-useless-constructor": "off",
     "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "none",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "no-unused-expressions": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/ban-ts-comment": "error",
+    "@typescript-eslint/no-extra-non-null-assertion": "error",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "error",
+    "@typescript-eslint/prefer-as-const": "error",
+    "@typescript-eslint/explicit-module-boundary-types": [
       "off"
-    ]
+    ],
+    "@typescript-eslint/consistent-type-imports": "error",
+    "no-duplicate-imports": "off"
   }
 }

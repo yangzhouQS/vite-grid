@@ -7,6 +7,7 @@ import type {
 	MenuColumnOption,
 	NumberColumnOption,
 	PercentCompleteBarColumnOption,
+	RowIndexStyleOption
 } from '@/ts-types';
 import type { BaseColumn } from './type/BaseColumn';
 import { BranchGraphColumn } from './type/BranchGraphColumn';
@@ -50,6 +51,8 @@ export {
 	BranchGraphColumn,
 	MenuColumn,
 	MultilineTextColumn,
+	RowIndex,
+
 	// types
 	BaseColumnOption,
 	BranchGraphColumnOption,
@@ -58,7 +61,7 @@ export {
 	MenuColumnOption,
 	NumberColumnOption,
 	PercentCompleteBarColumnOption,
-	RowIndex
+	RowIndexStyleOption
 };
 
 export function of<T>(

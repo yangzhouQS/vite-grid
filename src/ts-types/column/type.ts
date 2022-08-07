@@ -1,7 +1,7 @@
 import type { ColumnMenuItemOptions } from '../define';
-import { CellAddress } from '@/ts-types';
-import { ListGrid } from '@/ListGrid';
-import { DataTransfer } from '@/ts-types-internal';
+import type { CellAddress } from '@/ts-types';
+import type { ListGrid } from '@/ListGrid';
+import type { DataTransfer } from '@/ts-types-internal';
 
 export interface BaseColumnOption {
   fadeinWhenCallbackInPromise?: boolean | null;

@@ -12,6 +12,7 @@ export type PartialThemeDefine = Partial<ThemeDefine>;
 
 export interface ThemeDefine {
   font?: string;
+  frozenRowsFont?: string;
   underlayBackgroundColor: string;
   // color
   color: ColorPropertyDefine;
@@ -25,6 +26,20 @@ export interface ThemeDefine {
   borderColor: ColorsPropertyDefine;
   frozenRowsBorderColor: ColorsPropertyDefine;
   highlightBorderColor: ColorsPropertyDefine;
+
+  // grid border
+  gridBorderColor?: string
+  gridBorderWidth?: number
+
+  // drag
+  selectionDragBgColor?: ColorPropertyDefine
+  // focus
+  focusBgColor?: ColorPropertyDefine
+  // size
+  defaultRowHeight?: number
+  defaultColWidth?: number
+  highlightBorderWidth?: number
+
   checkbox: {
     uncheckBgColor?: ColorPropertyDefine;
     checkBgColor?: ColorPropertyDefine;
@@ -41,14 +56,30 @@ export interface ThemeDefine {
     color?: ColorPropertyDefine;
     bgColor?: ColorPropertyDefine;
   };
+
   header: {
     sortArrowColor?: ColorPropertyDefine;
   };
+
   messages: {
     infoBgColor?: ColorPropertyDefine;
     errorBgColor?: ColorPropertyDefine;
     warnBgColor?: ColorPropertyDefine;
   };
+
+  switch: {
+    uncheckBgColor?: ColorPropertyDefine
+    checkBgColor?: ColorPropertyDefine
+    borderColor?: ColorPropertyDefine
+  }
+
+  tree: {
+    lineColor?: ColorPropertyDefine
+    buttonColor?: ColorPropertyDefine
+    buttonBgColor?: ColorPropertyDefine
+    buttonBorderColor?: ColorPropertyDefine
+    linkColor?: ColorPropertyDefine
+  }
 }
 
 export type RequiredThemeDefine = Required<ThemeDefine> & {

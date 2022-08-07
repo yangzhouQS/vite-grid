@@ -29,13 +29,9 @@ import type {
 	ThemeDefine,
 } from '@/ts-types';
 
-import { DrawCellInfo } from './ts-types-internal';
+import type { DrawCellInfo } from './ts-types-internal';
 
 import {
-	ColumnData,
-	ColumnDefine,
-	HeaderDefine,
-	HeadersDefine,
 	MultiLayoutMap,
 	SimpleHeaderLayoutMap,
 } from './list-grid/layout-map';
@@ -45,7 +41,11 @@ import type {
 	DrawGridProtected,
 } from './core/DrawGrid';
 
-import type { LayoutDefine, LayoutMapAPI } from './list-grid/layout-map';
+import type { LayoutDefine, LayoutMapAPI ,
+	ColumnData,
+	ColumnDefine,
+	HeaderDefine,
+	HeadersDefine} from './list-grid/layout-map';
 import { MessageHandler, hasMessage } from './columns/message/MessageHandler';
 import {
 	cellEquals,
@@ -279,7 +279,16 @@ function _hasField<T>(
 	}
 }
 
-
+/**
+ * 单元格内容绘制
+ * @param grid
+ * @param cellValue
+ * @param context
+ * @param col
+ * @param row
+ * @param style
+ * @param draw
+ */
 function _onDrawValue<T>(
 	grid: ListGrid<T>,
 	cellValue: MaybePromise<unknown>,
@@ -344,7 +353,7 @@ function _onDrawValue<T>(
 		drawCellBg,
 		drawCellBorder,
 		getCell(): CellAddress {
-			return {col,row};
+			return { col, row };
 		}
 	};
 
@@ -1553,5 +1562,13 @@ export class ListGrid<T> extends DrawGrid implements ListGridAPI<T> {
 		...event: ListGridEventHandlersEventMap<T>[TYPE]
 	): ListGridEventHandlersReturnMap[TYPE][] {
 		return super.fireListeners(type as any, ...event);
+	}
+
+	protected getDefaultBorderColor(): string {
+		return this[_].gridCanvasHelper.theme.gridBorderColor;
+	}
+
+	protected getDefaultBorderWidth(): number {
+		return this[_].gridCanvasHelper.theme.gridBorderWidth;
 	}
 }

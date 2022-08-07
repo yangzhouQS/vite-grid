@@ -21,7 +21,7 @@ import { isPromise, obj } from '@/internal/utils';
 import { BaseStyle } from '../style/BaseStyle';
 import { animate } from '@/internal/animate';
 import { getColumnFadeinStateId } from '@/internal/symbolManager';
-import { AfterConvertInternalOption } from '@/ts-types-internal';
+import type { AfterConvertInternalOption } from '@/ts-types-internal';
 
 const { setReadonly } = obj;
 const COLUMN_FADEIN_STATE_ID = getColumnFadeinStateId();

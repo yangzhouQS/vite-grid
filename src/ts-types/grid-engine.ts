@@ -197,6 +197,7 @@ export interface ListGridAPI<T> extends DrawGridAPI {
   getColumnType(col: number, row: number): ColumnTypeAPI;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ColumnTypeAPI {
   //
 }

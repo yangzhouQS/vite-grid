@@ -10,7 +10,8 @@ import type {
 	NumberStyleOption,
 	PercentCompleteBarStyleOption,
 	StyleOption,
-} from '../ts-types';
+	RowIndexStyleOption
+} from '@/ts-types';
 import { BaseStyle } from './style/BaseStyle';
 import { ButtonStyle } from './style/ButtonStyle';
 import { CheckStyle } from './style/CheckStyle';
@@ -22,6 +23,7 @@ import { NumberStyle } from './style/NumberStyle';
 import { PercentCompleteBarStyle } from './style/PercentCompleteBarStyle';
 import { RadioStyle } from './style/RadioStyle';
 import { Style } from './style/Style';
+import { RowIndexStyle } from './style/RowIndexStyle';
 
 const { EVENT_TYPE } = BaseStyle;
 export {
@@ -37,6 +39,7 @@ export {
 	PercentCompleteBarStyle,
 	MultilineTextStyle,
 	MenuStyle,
+	RowIndexStyle,
 	// types
 	BaseStyleOption,
 	ButtonStyleOption,
@@ -48,10 +51,11 @@ export {
 	NumberStyleOption,
 	PercentCompleteBarStyleOption,
 	StyleOption,
+	RowIndexStyleOption,
 };
+
 export function of(
 	columnStyle: ColumnStyleOption | null | undefined,
-  
 	record: any,
 	StyleClassDef: typeof BaseStyle = Style
 ): BaseStyle {
@@ -63,7 +67,7 @@ export function of(
 		} else if (record && (columnStyle as symbol) in record) {
 			return of(record[columnStyle as string], record, StyleClassDef);
 		}
-    
+
 		return new StyleClassDef(columnStyle as any);
 	} else {
 		return StyleClassDef.DEFAULT;

@@ -176,6 +176,7 @@ export class FilterDataSource<T> extends DataSource<T> {
 		const handler = (this._handler = new EventHandler());
 		handler.on(dataSource, DataSource.EVENT_TYPE.UPDATED_ORDER, () => {
 			// reset
+			// eslint-disable-next-line no-self-assign
 			this.filter = this.filter;
 		});
 		each(DataSource.EVENT_TYPE, (type) => {

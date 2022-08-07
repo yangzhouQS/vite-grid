@@ -9,13 +9,13 @@ import type {
 	ListGridAPI,
 	Message,
 	MessageObject,
-} from '../../ts-types';
+} from '@/ts-types';
 import type { BaseMessage } from './BaseMessage';
 import { ErrorMessage } from './ErrorMessage';
 import { InfoMessage } from './InfoMessage';
-import { LG_EVENT_TYPE } from '../../list-grid/LG_EVENT_TYPE';
+import { LG_EVENT_TYPE } from '@/list-grid/LG_EVENT_TYPE';
 import { WarningMessage } from './WarningMessage';
-import { isPromise } from '../../internal/utils';
+import { isPromise } from '@/internal/utils';
 
 const EMPTY_MESSAGE: MessageObject = {
 	type: 'error',
@@ -55,7 +55,7 @@ function normalizeMessage(message: Message): MessageObject {
 	}
 	return {
 		type: 'error',
-    
+
 		message: `${message}`,
 		original: message,
 	};

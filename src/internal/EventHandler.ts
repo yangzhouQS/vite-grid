@@ -1,5 +1,5 @@
-import { AnyFunction, EventListenerId } from '@/ts-types';
-import { EventTarget as CustomEventTarget } from '../core/EventTarget';
+import type { AnyFunction, EventListenerId } from '@/ts-types';
+import type { EventTarget as CustomEventTarget } from '../core/EventTarget';
 import { each } from './utils';
 
 
@@ -14,7 +14,7 @@ type EventListenerObject = {
   target: EventHandlerTarget;
   type: string;
   listener: Listener;
-  
+
   options: any[];
 };
 
@@ -26,23 +26,23 @@ export class EventHandler {
 	on<TYPE extends keyof GlobalEventHandlersEventMap>(
     target: EventHandlerTarget,
     type: TYPE,
-    
+
     listener: (event: GlobalEventHandlersEventMap[TYPE]) => any,
-    
+
     ...options: any[]
   ): EventListenerId;
 	on(
     target: EventHandlerTarget,
     type: string,
     listener: Listener,
-    
+
     ...options: any[]
   ): EventListenerId;
 	on(
 		target: EventHandlerTarget,
 		type: string,
 		listener: Listener,
-    
+
 		...options: any[]
 	): EventListenerId {
 		if (target.addEventListener) {
@@ -62,9 +62,9 @@ export class EventHandler {
 	once<TYPE extends keyof GlobalEventHandlersEventMap>(
     target: EventHandlerTarget,
     type: TYPE,
-    
+
     listener: (event: GlobalEventHandlersEventMap[TYPE]) => any,
-    
+
     ...options: any[]
   ): EventListenerId;
 	once(
@@ -142,7 +142,7 @@ export class EventHandler {
 		}
 	}
 
-  
+
 	fire(target: EventTarget, type: string, ...args: any[]): void {
 		each(this._listeners, (obj) => {
 			if (obj.target === target && obj.type === type) {
@@ -176,7 +176,7 @@ export class EventHandler {
 
 	dispose(): void {
 		this.clear();
-    
+
 		(this as any)._listeners = null;
 	}
 }

@@ -1,4 +1,4 @@
-import type { AnyFunction } from '../ts-types';
+import type { AnyFunction } from '@/ts-types';
 import { isNode } from './utils';
 
 const loads: { [key: string]: boolean } = {};

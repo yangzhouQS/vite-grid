@@ -1,6 +1,5 @@
-/**
- * 自定义主题
- */
+
+// 自定义主题
 export const customTheme = {
 	color: 'red',
 	frozenRowsColor: 'red',

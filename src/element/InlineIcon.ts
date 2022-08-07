@@ -9,12 +9,15 @@ export type InlineIconConstructorOption = {
   content?: string;
   color?: ColorDef;
 };
+
 export class InlineIcon extends Inline {
 	private _icon: InlineIconConstructorOption;
+
 	constructor(icon: InlineIconConstructorOption) {
 		super();
 		this._icon = icon || {};
 	}
+
 	width({ ctx }: { ctx: CanvasRenderingContext2D }): number {
 		const icon = this._icon;
 		if (icon.width) {
@@ -33,22 +36,27 @@ export class InlineIcon extends Inline {
 		}
 		return 0; //unknown
 	}
+
 	font(): string | null {
 		return this._icon.font ?? null;
 	}
+
 	color(): ColorDef | null {
 		return this._icon.color ?? null;
 	}
+
 	canDraw(): boolean {
 		const icon = this._icon;
 		return icon.font ? fonts.check(icon.font, icon.content || '') : true;
 	}
+
 	onReady(callback: AnyFunction): void {
 		const icon = this._icon;
 		if (icon.font && !fonts.check(icon.font, icon.content || '')) {
 			fonts.load(icon.font, icon.content || '', callback);
 		}
 	}
+
 	draw({
 		ctx,
 		canvashelper,
@@ -63,7 +71,7 @@ export class InlineIcon extends Inline {
 		if (icon.content) {
 			ctx.canvas.style.letterSpacing = 'normal';
 			try {
-				ctx.font = ctx.font; // To apply letterSpacing, we need to reset it.
+				ctx.font = ctx.font || ''; // To apply letterSpacing, we need to reset it.
 				canvashelper.fillTextRect(
 					ctx,
 					icon.content,
@@ -86,9 +94,11 @@ export class InlineIcon extends Inline {
 			}
 		}
 	}
+
 	canBreak(): boolean {
 		return false;
 	}
+
 	toString(): string {
 		return '';
 	}

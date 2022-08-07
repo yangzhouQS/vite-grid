@@ -1,7 +1,7 @@
 import { BaseColumn } from '@/columns/type/BaseColumn';
-import { CellContext, GridCanvasHelperAPI, ListGridAPI, RowIndexOption } from '@/ts-types';
-import { DrawCellInfo } from '@/ts-types-internal';
-import { RowIndexStyle } from '@/columns/style/RowIndexStyle';
+import type { CellContext, GridCanvasHelperAPI, ListGridAPI, RowIndexOption } from '@/ts-types';
+import type { DrawCellInfo } from '@/ts-types-internal';
+import type { RowIndexStyle } from '@/columns/style/RowIndexStyle';
 
 
 export class RowIndex<T> extends BaseColumn<T, string> {
@@ -22,7 +22,6 @@ export class RowIndex<T> extends BaseColumn<T, string> {
 		info: DrawCellInfo<T>
 	): void {
 		const {
-			textAlign,
 			textBaseline,
 			font,
 			color,
@@ -32,7 +31,7 @@ export class RowIndex<T> extends BaseColumn<T, string> {
 		helper.text(`${ cellInfo.row }`, context, {
 			color,
 			font,
-			textAlign,
+			textAlign: 'center',
 			textBaseline,
 			textOverflow,
 		});

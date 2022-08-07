@@ -3,7 +3,7 @@ import type {
 	CellRange,
 	MaybeCall,
 	MaybePromise,
-} from '../ts-types';
+} from '@/ts-types';
 
 const isNode =
   typeof window === 'undefined' || typeof window.window === 'undefined';
@@ -104,6 +104,7 @@ function analyzeUserAgent(): {
 		};
 	}
 }
+
 const { IE, Chrome, Firefox, Edge, Safari } = analyzeUserAgent();
 
 function setReadonly<T, K extends keyof T>(obj: T, name: K, value: T[K]): void {
@@ -208,6 +209,7 @@ export function extend<T>(...args: T[]): T {
 	});
 	return result;
 }
+
 function isDescendantElement(root: HTMLElement, target: HTMLElement): boolean {
 	while (target.parentElement) {
 		const p = target.parentElement;
@@ -218,6 +220,7 @@ function isDescendantElement(root: HTMLElement, target: HTMLElement): boolean {
 	}
 	return false;
 }
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function applyChainSafe(
 	obj: any,
@@ -230,9 +233,11 @@ function applyChainSafe(
 	}
 	return value;
 }
+
 function getChainSafe(obj: any, ...names: string[]): any {
 	return applyChainSafe(obj, (val, name) => val[name], ...names);
 }
+
 function getOrApply<_T, A extends any[]>(
   value: undefined,
   ...args: A
@@ -246,6 +251,7 @@ function getOrApply<T, A extends any[]>(value: MaybeCall<T, A>, ...args: A): T {
 		return value;
 	}
 }
+
 /* eslint-enable @typescript-eslint/no-explicit-any */
 function endsWith(
 	str: string,
@@ -265,6 +271,7 @@ function endsWith(
 	const lastIndex = subjectString.lastIndexOf(searchString, position);
 	return lastIndex !== -1 && lastIndex === position;
 }
+
 function genChars(s: string): { next(): string | null } {
 	// Surrogate Code Point
 	// [\uD800-\uDBFF]
@@ -281,9 +288,11 @@ function genChars(s: string): { next(): string | null } {
 		},
 	};
 }
+
 export type GenWordsResult = {
   next(): string | null;
 };
+
 function genWords(s: string): GenWordsResult {
 	const re = /[!-~]+|[^!-~\s]+|\s+/g;
 	return {
@@ -299,6 +308,7 @@ export function isPromise<T>(
 ): data is Promise<T> {
 	return Boolean(data && typeof (data as Promise<T>).then === 'function');
 }
+
 function then<T, R>(
   result: MaybePromise<T>,
   callback: (arg: T) => MaybePromise<R>
@@ -313,6 +323,7 @@ function then<T, R>(
 ): MaybePromise<R> {
 	return isPromise(result) ? result.then((r) => callback(r)) : callback(result);
 }
+
 function getMouseButtons(e: MouseEvent): number {
 	if (e.buttons != null) {
 		return e.buttons;
@@ -338,9 +349,11 @@ function getMouseButtons(e: MouseEvent): number {
 	}
 	return 0; //no or middle?
 }
+
 function getKeyCode(e: KeyboardEvent): number {
 	return e.keyCode || e.which;
 }
+
 function isTouchEvent(e: TouchEvent | MouseEvent): e is TouchEvent {
 	return !!(e as TouchEvent).changedTouches;
 }
@@ -364,14 +377,15 @@ function getIgnoreCase(obj: any, name: string): any {
 	}
 	return undefined;
 }
+
 function cancel(e: Event): void {
 	e.preventDefault();
 	e.stopPropagation();
 }
 
-function toBoxArray<T>(obj: T | T[]): [T, T, T, T] {
+function toBoxArray<T>(obj: T | T[]): [ T, T, T, T ] {
 	if (!Array.isArray(obj)) {
-		return [obj /*top*/, obj /*right*/, obj /*bottom*/, obj /*left*/];
+		return [ obj /*top*/, obj /*right*/, obj /*bottom*/, obj /*left*/ ];
 	}
 	if (obj.length === 3) {
 		return [
@@ -397,7 +411,7 @@ function toBoxArray<T>(obj: T | T[]): [T, T, T, T] {
 			obj[0] /*left*/,
 		];
 	}
-	return obj as [T, T, T, T];
+	return obj as [ T, T, T, T ];
 }
 
 export {
@@ -414,6 +428,7 @@ export {
 export function cellEquals(a: CellAddress, b: CellAddress): boolean {
 	return a.col === b.col && a.row === b.row;
 }
+
 export function cellInRange(
 	range: CellRange,
 	col: number,
@@ -458,3 +473,11 @@ export const style = {
 	toBoxArray,
 };
 export const emptyFn = Function.prototype;
+
+export const ArrayProto = Array.prototype, ObjProto = Object.prototype;
+export const SymbolProto = typeof Symbol !== 'undefined' ? Symbol.prototype : null;
+
+export const push = ArrayProto.push,
+	slice = ArrayProto.slice,
+	toString = ObjProto.toString,
+	hasOwnProperty = ObjProto.hasOwnProperty;
