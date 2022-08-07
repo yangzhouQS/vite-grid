@@ -481,3 +481,12 @@ export const push = ArrayProto.push,
 	slice = ArrayProto.slice,
 	toString = ObjProto.toString,
 	hasOwnProperty = ObjProto.hasOwnProperty;
+
+let idStart = 0x0907;
+
+/**
+ * Generate unique id
+ */
+export function guid(): number {
+	return idStart++;
+}

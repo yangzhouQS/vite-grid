@@ -1,6 +1,6 @@
-import * as calc from '../internal/calc';
 import * as hiDPI from '../internal/hiDPI';
-import * as style from '../internal/style';
+import style from '../internal/style';
+
 import type {
 	AfterSelectedCellEvent,
 	AnyFunction,
@@ -16,12 +16,12 @@ import type {
 	KeyboardEventListener,
 	KeydownEvent,
 	PasteCellEvent,
-	PasteRangeBoxValues,
+	PasteRangeBoxValues, ScrollableAPI,
 } from '@/ts-types';
 import {
 	array,
 	browser,
-	event,
+	event, hasOwnProperty,
 	isDescendantElement,
 	isPromise,
 } from '@/internal/utils';
@@ -31,61 +31,47 @@ import { EventHandler } from '@/internal/EventHandler';
 import { EventTarget } from './EventTarget';
 import { NumberMap } from '@/internal/NumberMap';
 import { Rect } from '@/internal/Rect';
-import { Scrollable } from '@/internal/Scrollable';
 import { getFontSize } from '@/internal/canvases';
 //protected symbol
 import { getProtectedSymbol } from '@/internal/symbolManager';
 import { parsePasteRangeBoxValues } from '@/internal/paste-utils';
+import { toPx } from '@/internal/calc';
+
+// key code
+import {
+	KEY_ALPHA_A, KEY_ALPHA_C, KEY_ALPHA_V, KEY_DEL,
+	KEY_DOWN,
+	KEY_END,
+	KEY_ENTER,
+	KEY_HOME,
+	KEY_LEFT,
+	KEY_RIGHT,
+	KEY_TAB,
+	KEY_UP,
+	KEY_BS
+} from '@/core/drap-grid/KEY_CODE';
+// import SmoothScrollbar from '@/internal/SmoothScrollbar';
+import PerfectScrollBar from '@/internal/PerfectScrollbar';
+import { Scrollable } from '@/internal/Scrollable';
 
 const {
-
 	isTouchEvent,
-
 	getMouseButtons,
-
 	getKeyCode,
-
 	cancel: cancelEvent,
 } = event;
 
 const _ = getProtectedSymbol();
 
-
+// https://idiotwu.github.io/smooth-scrollbar/
 function createRootElement(): HTMLElement {
 	const element = document.createElement('div');
-	element.classList.add('cheetah-grid');
+	element.classList.add('system-grid');
 	return element;
 }
 
 
-const KEY_BS = 8;
-
-const KEY_TAB = 9;
-
-const KEY_ENTER = 13;
-
-const KEY_END = 35;
-
-const KEY_HOME = 36;
-
-const KEY_LEFT = 37;
-
-const KEY_UP = 38;
-
-const KEY_RIGHT = 39;
-
-const KEY_DOWN = 40;
-
-const KEY_DEL = 46;
-
-const KEY_ALPHA_A = 65;
-
-const KEY_ALPHA_C = 67;
-
-const KEY_ALPHA_V = 86;
-
 //private methods
-
 function _vibrate(e: TouchEvent | MouseEvent): void {
 	if (navigator.vibrate && isTouchEvent(e)) {
 		navigator.vibrate(50);
@@ -603,8 +589,53 @@ function _invalidateRect(grid: DrawGrid, drawRect: Rect): void {
 	drawLayers.draw(ctx);
 }
 
+let _isPreciseColWidth = false;
+
 function _toPxWidth(grid: DrawGrid, width: string | number): number {
-	return Math.round(calc.toPx(width, grid[_].calcWidthContext));
+	// return Math.round(calc.toPx(width, grid[_].calcWidthContext));
+	// 解决100%出现滚动条问题，此办法会导致右侧有空白，空白部分由_initColWidthsOffset负责填充
+	// return Math.round(toPx(width, grid[_].calcWidthContext));
+	const w = toPx(width, grid[_].calcWidthContext);
+	return _isPreciseColWidth ? w : Math.floor(w);
+}
+
+function _getColPreciseWidth(grid: DrawGrid, col: number) {
+	try {
+		_isPreciseColWidth = true;
+		return grid.getColWidth(col);
+	} finally {
+		_isPreciseColWidth = false;
+	}
+}
+
+function _initColWidthsOffset(grid: DrawGrid) {
+	const colWidthsOffset: {
+    [col: number]: number
+  } = {};
+	let total = 0;
+	for (let col = 0; col < grid.colCount; col++) {
+		const w1 = grid.getColWidth(col);
+		const w2 = _getColPreciseWidth(grid, col);
+		if (w1 !== w2) {
+			total += w2 - w1;
+			colWidthsOffset[col] = 0;
+		}
+	}
+	total = Math.round(total);
+	if (total > 0) {
+		for (const col in colWidthsOffset) {
+			// if (colWidthsOffset.hasOwnProperty(col)) {
+			if (hasOwnProperty.call(colWidthsOffset, col)) {
+				colWidthsOffset[col] += 1;
+				total--;
+				if (!total) {
+					break;
+				}
+			}
+		}
+	}
+
+	grid[_].colWidthsOffset = colWidthsOffset;
 }
 
 function _adjustColWidth(
@@ -612,8 +643,10 @@ function _adjustColWidth(
 	col: number,
 	orgWidth: number
 ): number {
+	const offset = grid[_].colWidthsOffset[col] || 0;
 	const limits = _getColWidthLimits(grid, col);
-	return Math.max(_applyColWidthLimits(limits, orgWidth), 0);
+	return Math.max(_applyColWidthLimits(limits, orgWidth), 0) + offset;
+	// return grid._adjustColWidth(col, orgWidth);
 }
 
 function _applyColWidthLimits(
@@ -712,9 +745,7 @@ function _getColWidthLimits(
  * @private
  */
 function isAutoDefine(width: string | number): width is 'auto' {
-	return Boolean(
-		width && typeof width === 'string' && width.toLowerCase() === 'auto'
-	);
+	return !!(width && typeof width === 'string' && width.toLowerCase() === 'auto');
 }
 
 /**
@@ -2010,7 +2041,7 @@ function setSafeInputValue(input: HTMLInputElement, value: string): void {
  */
 class FocusControl extends EventTarget {
 	private _grid: DrawGrid;
-	private _scrollable: Scrollable;
+	private _scrollable: ScrollableAPI;
 	private _handler: EventHandler;
 	private _input: HTMLInputElement;
 	private _isComposition?: boolean;
@@ -2021,7 +2052,7 @@ class FocusControl extends EventTarget {
 	constructor(
 		grid: DrawGrid,
 		parentElement: HTMLElement,
-		scrollable: Scrollable
+		scrollable: ScrollableAPI
 	) {
 		super();
 		this._grid = grid;
@@ -2863,10 +2894,13 @@ class DrawCellContext implements CellContext {
 	}
 }
 
-/** @protected */
+
+/**
+ * 属性约束
+ */
 interface DrawGridProtected {
   element: HTMLElement;
-  scrollable: Scrollable;
+  scrollable: ScrollableAPI;
   handler: EventHandler;
   selection: Selection;
   focusControl: FocusControl;
@@ -2878,12 +2912,18 @@ interface DrawGridProtected {
   frozenRowCount: number;
   defaultRowHeight: number;
   defaultColWidth: string | number;
+  highlightBorderWidth?: string | number
   font?: string;
+  underlayRowCount: number
+  underlayColCount: number
+  underlayRowHeight: number | 'auto'
+  underlayColWidth: number | 'auto'
   underlayBackgroundColor?: string;
 
   borderColor: string
   borderWidth: number
   keyboardOptions?: DrawGridKeyboardOptions;
+  singleSelection: boolean
   disableColumnResize?: boolean;
 
   rowHeightsMap: NumberMap<number>;
@@ -2892,8 +2932,12 @@ interface DrawGridProtected {
     [col: number]: {
       max?: string | number;
       min?: string | number;
+      disableResize?: boolean
     };
   };
+  colWidthsOffset: {
+    [col: number]: number
+  }
   calcWidthContext: {
     _: DrawGridProtected;
     full: number;
@@ -2901,10 +2945,15 @@ interface DrawGridProtected {
   };
 
   columnResizer: ColumnResizer;
+  // selectionResizer: SelectionResizer
+  selectionResizer: any
   cellSelector: CellSelector;
 
   drawCells: { [row: number]: { [col: number]: DrawCellContext } };
   cellTextOverflows: { [at: string]: string };
+  cellTypeOverflows: {
+    [at: string]: string
+  }
   focusedGrid: boolean;
 
   config:
@@ -2922,6 +2971,9 @@ interface DrawGridProtected {
 
 export { DrawGridProtected };
 
+/**
+ * 绘制构造函数
+ */
 export interface DrawGridConstructorOptions {
   rowCount?: number;
   colCount?: number;
@@ -2935,7 +2987,12 @@ export interface DrawGridConstructorOptions {
    * Default grid col width. default 80
    */
   defaultColWidth?: string | number;
+  highlightBorderWidth?: number | string
   font?: string;
+  underlayRowCount?: number
+  underlayColCount?: number
+  underlayRowHeight?: number | 'auto'
+  underlayColWidth?: number | 'auto'
   underlayBackgroundColor?: string;
 
   /**
@@ -2955,6 +3012,7 @@ export interface DrawGridConstructorOptions {
    * Disable column resizing
    */
   disableColumnResize?: boolean;
+  singleSelection?: boolean
 }
 
 const protectedKey = _;
@@ -2980,52 +3038,79 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 			frozenRowCount = 0,
 			defaultRowHeight = 40,
 			defaultColWidth = 80,
+			highlightBorderWidth = 2,
 			font,
+			underlayRowCount = 0,
+			underlayColCount = 0,
+			underlayRowHeight = 'auto',
+			underlayColWidth = 'auto',
 			underlayBackgroundColor,
 			borderColor = '',
 			borderWidth = 0,
 			keyboardOptions,
 			parentElement,
+			singleSelection,
 			disableColumnResize,
 		} = options;
 		const protectedSpace = (this[_] = {} as DrawGridProtected);
+
+		// 表格外壳样式初始化
 		style.initDocument();
 		protectedSpace.element = createRootElement();
-		protectedSpace.scrollable = new Scrollable();
-		protectedSpace.handler = new EventHandler();
-		protectedSpace.selection = new Selection(this);
-		protectedSpace.focusControl = new FocusControl(
-			this,
-			protectedSpace.scrollable.getElement(),
-			protectedSpace.scrollable
-		);
 
 		protectedSpace.canvas = hiDPI.transform(document.createElement('canvas'));
 		protectedSpace.context = protectedSpace.canvas.getContext('2d', {
 			alpha: false,
 		})!;
 
+		// protectedSpace.scrollable = new PerfectScrollBar();
+		// protectedSpace.scrollable = new SmoothScrollbar();
+		protectedSpace.scrollable = new Scrollable(protectedSpace.canvas);
+		protectedSpace.handler = new EventHandler();
+		protectedSpace.selection = new Selection(this);
+
+		// 滚动条相关初始化
+		protectedSpace.focusControl = new FocusControl(
+			this,
+			protectedSpace.scrollable.getElement(),
+			protectedSpace.scrollable
+		);
+
+
 		protectedSpace.rowCount = rowCount;
 		protectedSpace.colCount = colCount;
 		protectedSpace.frozenColCount = frozenColCount;
 		protectedSpace.frozenRowCount = frozenRowCount;
+		protectedSpace.underlayRowCount = underlayRowCount;
+		protectedSpace.underlayColCount = underlayColCount;
+		protectedSpace.underlayRowHeight = underlayRowHeight;
+		protectedSpace.underlayColWidth = underlayColWidth;
 
+
+		// border
 		protectedSpace.borderColor = borderColor;
 		protectedSpace.borderWidth = borderWidth;
 
+		// cell width/height
 		protectedSpace.defaultRowHeight = defaultRowHeight;
 		protectedSpace.defaultColWidth = defaultColWidth;
+		protectedSpace.highlightBorderWidth = highlightBorderWidth;
 
 		protectedSpace.font = font;
 		protectedSpace.underlayBackgroundColor = underlayBackgroundColor;
 
-		protectedSpace.keyboardOptions = keyboardOptions;
+		protectedSpace.keyboardOptions = keyboardOptions || {};
+		protectedSpace.keyboardOptions.moveCellOnEnter = protectedSpace.keyboardOptions.moveCellOnEnter ?? true;
+		protectedSpace.keyboardOptions.moveCellOnTab = protectedSpace.keyboardOptions.moveCellOnTab ?? true;
+		protectedSpace.singleSelection = !!singleSelection;
+		protectedSpace.disableColumnResize = !!disableColumnResize || !!(options as any).disableColResize;
 		protectedSpace.disableColumnResize = disableColumnResize;
 
 		/////
 		protectedSpace.rowHeightsMap = new NumberMap();
 		protectedSpace.colWidthsMap = new NumberMap();
 		protectedSpace.colWidthsLimit = {};
+		protectedSpace.colWidthsOffset = {};
 		protectedSpace.calcWidthContext = {
 			_: protectedSpace,
 			get full(): number {
@@ -3037,10 +3122,12 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 		};
 
 		protectedSpace.columnResizer = new ColumnResizer(this);
+		protectedSpace.selectionResizer = {}; // new SelectionResizer(this)
 		protectedSpace.cellSelector = new CellSelector(this);
 
 		protectedSpace.drawCells = {};
 		protectedSpace.cellTextOverflows = {};
+		protectedSpace.cellTypeOverflows = {};
 		protectedSpace.focusedGrid = false;
 
 		protectedSpace.element.appendChild(protectedSpace.canvas);
@@ -3089,20 +3176,9 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 	}
 
 	/**
-   * Border color of the grid.
+   * Selection instance.
    */
-	public get borderColor(): string {
-		return this[_].borderColor || this.getDefaultBorderColor();
-	}
-
-	public set borderColor(borderColor) {
-		this[_].borderColor = borderColor;
-	}
-
-	/**
-   * Get the selection instance.
-   */
-	get selection(): Selection {
+	public get selection(): Selection {
 		return this[_].selection;
 	}
 
@@ -3204,6 +3280,17 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 	}
 
 	/**
+   * Highlight Border Width.
+   */
+	public get highlightBorderWidth(): string | number {
+		return this[_].highlightBorderWidth || 2; // this.getHighlightBorderWidth();
+	}
+
+	public set highlightBorderWidth(highlightBorderWidth: string | number) {
+		this[_].highlightBorderWidth = highlightBorderWidth;
+	}
+
+	/**
    * Get the font definition as a string.
    */
 	get font(): string | undefined {
@@ -3215,6 +3302,50 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
    */
 	set font(font: string | undefined) {
 		this[_].font = font;
+	}
+
+	/**
+   * Number of underlay rows.
+   */
+	public get underlayRowCount(): number {
+		return this[_].underlayRowCount;
+	}
+
+	public set underlayRowCount(underlayRowCount: number) {
+		this[_].underlayRowCount = underlayRowCount;
+	}
+
+	/**
+   * Number of underlay cols.
+   */
+	public get underlayColCount(): number {
+		return this[_].underlayColCount;
+	}
+
+	public set underlayColCount(underlayColCount: number) {
+		this[_].underlayColCount = underlayColCount;
+	}
+
+	/**
+   * Height of underlay row.
+   */
+	public get underlayRowHeight(): number | 'auto' {
+		return this[_].underlayRowHeight;
+	}
+
+	public set underlayRowHeight(underlayRowHeight: number | 'auto') {
+		this[_].underlayRowHeight = underlayRowHeight;
+	}
+
+	/**
+   * Width of underlay col.
+   */
+	public get underlayColWidth(): number | 'auto' {
+		return this[_].underlayColWidth;
+	}
+
+	public set underlayColWidth(underlayColWidth: number | 'auto') {
+		this[_].underlayColWidth = underlayColWidth;
 	}
 
 	/**
@@ -3231,6 +3362,28 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 		this[_].underlayBackgroundColor = underlayBackgroundColor;
 	}
 
+	/**
+   * Border color of the grid.
+   */
+	public get borderColor(): string {
+		return this[_].borderColor || this.getDefaultBorderColor();
+	}
+
+	public set borderColor(borderColor) {
+		this[_].borderColor = borderColor;
+	}
+
+	/**
+   * Border width of the grid.
+   */
+	public get borderWidth(): number {
+		return this[_].borderWidth || this.getDefaultBorderWidth();
+	}
+
+	public set borderWidth(borderWidth) {
+		this[_].borderWidth = borderWidth;
+	}
+
 	get keyboardOptions(): DrawGridKeyboardOptions | null {
 		return this[_].keyboardOptions ?? null;
 	}
@@ -3238,6 +3391,49 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 	set keyboardOptions(keyboardOptions: DrawGridKeyboardOptions | null) {
 		this[_].keyboardOptions = keyboardOptions ?? undefined;
 	}
+
+	/**
+   * Single selection.
+   */
+	public get singleSelection(): boolean {
+		return this[_].singleSelection;
+	}
+
+	public set singleSelection(singleSelection: boolean) {
+		this[_].singleSelection = singleSelection;
+	}
+
+	/**
+   * Disable column resize.
+   */
+	public get disableColumnResize(): boolean {
+		// return this[_].disableColumnResize;
+		return false;
+	}
+
+	public set disableColumnResize(disableColumnResize: boolean) {
+		this[_].disableColumnResize = disableColumnResize;
+	}
+
+	public get disableColResize(): boolean {
+		window.console.warn(
+			'\'disableColResize\' is deprecated, please use \'disableColumnResize\' instead'
+		);
+		return this.disableColumnResize;
+	}
+
+	public set disableColResize(disableColumnResize: boolean) {
+		window.console.warn(
+			'\'disableColResize\' is deprecated, please use \'disableColumnResize\' instead'
+		);
+		this.disableColumnResize = disableColumnResize;
+	}
+
+	public get canDragSelection() {
+		return this[_].selectionResizer.canStart();
+	}
+
+	// =========================end===============get/set
 
 	configure(name: 'fadeinWhenCallbackInPromise', value?: boolean): boolean;
 
@@ -3258,6 +3454,8 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 		const { canvas } = this[_];
 		canvas.style.width = '';
 		canvas.style.height = '';
+
+		// 计算画布大小
 		const width = Math.floor(
 			canvas.offsetWidth ||
       canvas.parentElement!.offsetWidth -
@@ -3273,6 +3471,7 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 		canvas.height = height;
 
 		//整数で一致させるためstyleをセットして返す
+		//整数 为使之一致，设定style返回
 		canvas.style.width = `${ width }px`;
 		canvas.style.height = `${ height }px`;
 
@@ -3285,6 +3484,7 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
    * @return {boolean} `true` if there was a change in the scroll size
    */
 	updateScroll(): boolean {
+		_initColWidthsOffset(this);
 		const { scrollable } = this[_];
 		const newHeight = _getScrollHeight.call(this);
 		const newWidth = _getScrollWidth(this);
@@ -3292,6 +3492,7 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 			newHeight === scrollable.scrollHeight &&
       newWidth === scrollable.scrollWidth
 		) {
+			scrollable.update();
 			return false;
 		}
 		scrollable.setScrollSize(newWidth, newHeight);
@@ -3385,6 +3586,28 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 	}
 
 	/**
+   * Get the column disable resize of the given the column index.
+   * @param col - The column index
+   * @returns The column disable resize
+   */
+	public getColDisableResize(col: number) {
+		const obj = this[_].colWidthsLimit[col];
+		return (obj && obj.disableResize) || undefined;
+	}
+
+	/**
+   * Set the column disable resize of the given the column index.
+   * @param col - The column index
+   * @param disableResize - The column disable resize
+   * @returns
+   */
+	public setColDisableResize(col: number, disableResize: boolean) {
+		const obj =
+      this[_].colWidthsLimit[col] || (this[_].colWidthsLimit[col] = {});
+		obj.disableResize = disableResize;
+	}
+
+	/**
    * Get the rect of the cell.
    * @param {number} col index of column, of the cell
    * @param {number} row index of row, of the cell
@@ -3425,12 +3648,7 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
    * @param {number} endRow index of the ending row, of the cell
    * @returns {Rect} the rect of the cells.
    */
-	getCellsRect(
-		startCol: number,
-		startRow: number,
-		endCol: number,
-		endRow: number
-	): Rect {
+	getCellsRect(startCol: number, startRow: number, endCol: number, endRow: number): Rect {
 		const isFrozenStartCell = this.isFrozenCell(startCol, startRow);
 		const isFrozenEndCell = this.isFrozenCell(endCol, endRow);
 
@@ -3472,13 +3690,7 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 		);
 	}
 
-	isFrozenCell(
-		col: number,
-		row: number
-	): {
-    row: boolean;
-    col: boolean;
-  } | null {
+	isFrozenCell(col: number, row: number): { row: boolean; col: boolean; } | null {
 		const { frozenRowCount, frozenColCount } = this[_];
 		const isFrozenRow = frozenRowCount > 0 && row < frozenRowCount;
 		const isFrozenCol = frozenColCount > 0 && col < frozenColCount;
@@ -3570,16 +3782,60 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 	}
 
 	/**
+   * 2022-8-7 18:23:01
+   * add method
+   */
+	public _updatedSelection(): void {
+		const { focusControl } = this[_];
+		const { col: selCol, row: selRow } = this[_].selection.select;
+		const results = this.fireListeners(DG_EVENT_TYPE.EDITABLEINPUT_CELL, {
+			col: selCol,
+			row: selRow,
+		});
+
+		const editMode = array.findIndex(results, (v) => !!v) >= 0;
+		focusControl.editMode = editMode;
+
+		if (editMode) {
+			focusControl.storeInputStatus();
+			focusControl.setDefaultInputStatus();
+			this.fireListeners(DG_EVENT_TYPE.MODIFY_STATUS_EDITABLEINPUT_CELL, {
+				col: selCol,
+				row: selRow,
+				input: focusControl.input,
+			});
+		}
+	}
+
+	/**
    * Focus the cell.
+   * update at 2022-8-7 18:23:40
    * @param  {number} col The column index.
    * @param  {number} row The row index
    * @return {void}
    */
 	focusCell(col: number, row: number): void {
+		const startCol = this.selection.range.start.col;
+		const startRow = this.selection.range.start.row;
+		const endCol = this.selection.range.end.col;
+		const endRow = this.selection.range.end.row;
+
 		this.setFocusCursor(col, row);
 
 		// Failure occurs in IE if focus is not last
 		this[_].focusControl.focus();
+
+		// Failure occurs in IE if focus is not last
+		this._forceFocusCell();
+
+		// Invalidate Grid
+		this.selection.select = {
+			col,
+			row,
+		};
+
+		this.invalidateGridRect(startCol, startRow, endCol, endRow);
+		this.invalidateCell(col, row);
 	}
 
 	/**
@@ -3641,6 +3897,10 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 
 			_invalidateRect(this, invalidateTarget);
 		}
+	}
+
+	public _forceFocusCell() {
+		this[_].focusControl.focus();
 	}
 
 	invalidateCellRange(range: CellRange): void {
@@ -3797,6 +4057,15 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
 		this[_].scrollable.scrollLeft = scrollLeft;
 	}
 
+	public resize() {
+		if (this.getElement().offsetParent) {
+			// 只在元素可见时刷新
+			this.updateSize();
+			this.updateScroll();
+			this.invalidate();
+		}
+	}
+
 	/**
    * Get the value of cell with the copy action.
    * <p>
@@ -3842,8 +4111,15 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
    * @return {string | null} The text overflowing the cell rect.
    */
   getCellOverflowText(col: number, row: number): string | null {
-  	const key = `${ col }:${ row }`;
-  	return this[_].cellTextOverflows[key] || null;
+  	// const key = `${ col }:${ row }`;
+  	// return this[_].cellTextOverflows[key] || null;
+
+  	let overflowText = this.getCellOverflowTextInternal({ col, row }) || null;
+  	if (!overflowText) {
+  		const key = `${ col }:${ row }`;
+  		overflowText = this[_].cellTextOverflows[key] || null;
+  	}
+  	return overflowText;
   }
 
   /**
@@ -3965,6 +4241,48 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
   	return range;
   }
 
+  protected getAttachCellsAreaInternal(range: CellRange) {
+  	return _toRelativeRect(this, this.getCellRangeRect(range));
+  }
+
+  protected getAttachCellsPaddingInternal(
+  	_range: CellRange
+  ): [ number, number, number, number ] {
+  	return [ 0, 3, 0, 3 ];
+  }
+
+  protected getFocusRectInternal(col: number, row: number) {
+  	return this.getCellRect(col, row);
+  }
+
+  protected getDefaultRowHeight() {
+  	return 40;
+  }
+
+  protected getDefaultColWidth() {
+  	return 80;
+  }
+
+  protected getHighlightBorderWidth() {
+  	return 2;
+  }
+
+  protected updateSelectionRange(range: CellRange) {
+  	return range;
+  }
+
+  protected getCellOverflowTextInternal(_cell: CellAddress) {
+  	return '';
+  }
+
+  protected getCellOverflowTypeInternal(_cell: CellAddress) {
+  	return '';
+  }
+
+  protected getDefaultBorderMode() {
+  	return 'none';
+  }
+
   protected _getInitContext(): CanvasRenderingContext2D {
   	const ctx = this[_].context;
   	//初期化
@@ -3983,6 +4301,10 @@ export abstract class DrawGrid extends EventTarget implements DrawGridAPI {
   ): DrawGridEventHandlersReturnMap[TYPE][] {
   	return super.fireListeners(type, ...event);
   }
+
+  protected abstract getDefaultFont(): string
+
+  protected abstract getDefaultUnderlayBackgroundColor(): string
 
   protected abstract getDefaultBorderColor(): string
 

@@ -371,3 +371,15 @@ export interface Selection {
   range: CellRange;
 }
 
+export interface ScrollableAPI {
+  calcTop(top: number): number
+  getElement(): HTMLDivElement
+  setScrollSize(width: number, height: number): void
+  scrollWidth: number
+  scrollHeight: number
+  scrollLeft: number
+  scrollTop: number
+  onScroll(fn: EventListener): void
+  dispose(): void
+  update(): void
+}
