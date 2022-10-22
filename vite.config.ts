@@ -17,7 +17,7 @@ export default defineConfig({
 		svgLoader({
 			defaultImport: 'url' // or 'raw'
 		}),
-		splitVendorChunkPlugin,
+		splitVendorChunkPlugin(),
 		libCss()
 	],
 	build: {
