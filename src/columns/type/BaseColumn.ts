@@ -145,7 +145,7 @@ export abstract class BaseColumn<T, V> implements ColumnTypeAPI {
 	private _copyTransfer?: DataTransfer;
 	private _hidden?: boolean | ((record: T) => boolean);
 
-	constructor(option?: BaseColumnOption) {
+	constructor(option: BaseColumnOption = {}) {
 		this.onDrawCell = this.onDrawCell.bind(this); //スコープを固定させる
 		this._transfer = option?.transfer;
 		this._copyTransfer = option?.copyTransfer;

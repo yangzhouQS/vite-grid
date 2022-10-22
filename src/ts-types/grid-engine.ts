@@ -39,10 +39,13 @@ export interface DrawGridAPI {
   colCount: number;
   frozenRowCount: number;
   frozenColCount: number;
-  defaultRowHeight: number;
-  defaultColWidth: string | number;
+  defaultRowHeight: number; // 默认行高
+  defaultColWidth: string | number; // 默认列宽
   underlayBackgroundColor?: string;
+
+
   keyboardOptions: DrawGridKeyboardOptions | null;
+
   readonly selection: Selection;
   readonly canvas: HTMLCanvasElement;
   readonly visibleRowCount: number;
@@ -53,47 +56,68 @@ export interface DrawGridAPI {
   scrollTop: number;
 
   getElement(): HTMLElement;
+
   focus(): void;
+
   hasFocusGrid(): boolean;
+
   listen<TYPE extends keyof DrawGridEventHandlersEventMap>(
     type: TYPE,
     listener: (
       ...event: DrawGridEventHandlersEventMap[TYPE]
     ) => DrawGridEventHandlersReturnMap[TYPE]
   ): EventListenerId;
+
   listen(type: string, listener: AnyListener): EventListenerId;
+
+  // readonly canDragSelection: boolean | void | undefined
 
   configure(name: 'fadeinWhenCallbackInPromise', value?: boolean): boolean;
 
   updateSize(): void;
+
   updateScroll(): boolean;
 
   invalidate(): void;
+
   invalidateCell(col: number, row: number): void;
+
   invalidateGridRect(
     startCol: number,
     startRow: number,
     endCol?: number,
     endRow?: number
   ): void;
+
   invalidateCellRange(cellRange: CellRange): void;
 
   getRowHeight(row: number): number;
+
   setRowHeight(row: number, height: number): void;
+
   getColWidth(col: number): number;
+
   setColWidth(col: number, width: number): void;
+
   getMaxColWidth(col: number): string | number | undefined;
+
   setMaxColWidth(col: number, maxwidth: string | number): void;
+
   getMinColWidth(col: number): string | number | undefined;
+
   setMinColWidth(col: number, minwidth: string | number): void;
+
   getCellRect(col: number, row: number): RectProps;
+
   getCellRelativeRect(col: number, row: number): RectProps;
+
   getCellsRect(
     startCol: number,
     startRow: number,
     endCol: number,
     endRow: number
   ): RectProps;
+
   getCellRangeRect(cellRange: CellRange): RectProps;
 
   isFrozenCell(
@@ -103,39 +127,66 @@ export interface DrawGridAPI {
     row: boolean;
     col: boolean;
   } | null;
+
   getRowAt(absoluteY: number): number;
+
   getColAt(absoluteX: number): number;
+
   getCellAt(absoluteX: number, absoluteY: number): CellAddress;
+
   makeVisibleCell(col: number, row: number): void;
+
   setFocusCursor(col: number, row: number): void;
+
   focusCell(col: number, row: number): void;
+
   getCellOverflowText(col: number, row: number): string | null;
+
   setCellOverflowText(
     col: number,
     row: number,
     overflowText: false | string
   ): void;
 
+  getCellOverflowType(col: number, row: number): string | null
+
+  setCellOverflowType(
+    col: number,
+    row: number,
+    overflowText: false | string
+  ): void
+
   getAttachCellsArea(range: CellRange): {
     element: HTMLElement;
     rect: RectProps;
   };
+
   onKeyDownMove(evt: KeyboardEvent): void;
+
   dispose(): void;
+
   addDisposable(disposable: { dispose(): void }): void;
+
+  _getMouseRelativePoint(e: Event): { x: number; y: number } | null
 }
 
 export interface DataSourceAPI<T> {
   length: number;
+
   get(index: number): MaybePromiseOrUndef<T>;
+
   getField<F extends FieldDef<T>>(index: number, field: F): FieldData;
+
   hasField(index: number, field: FieldDef<T>): boolean;
+
   setField<F extends FieldDef<T>>(
     index: number,
     field: F,
     value: any
   ): MaybePromise<boolean>;
+
   sort(field: FieldDef<T>, order: 'desc' | 'asc'): MaybePromise<void>;
+
   dataSource: DataSourceAPI<T>;
 }
 
@@ -146,6 +197,12 @@ export interface SortState {
 }
 
 export type HeaderValues = Map<any, any>;
+
+export interface ListGridSpanBodyOptions {
+  startCol: number
+  endCol: number
+}
+
 export interface ListGridAPI<T> extends DrawGridAPI {
   records: T[] | null;
   dataSource: DataSourceAPI<T>;
@@ -153,17 +210,24 @@ export interface ListGridAPI<T> extends DrawGridAPI {
   sortState: SortState | null;
   headerValues: HeaderValues;
   recordRowCount: number;
-  disabled: boolean;
-  readOnly: boolean;
+  readOnly: boolean | ((record: T) => boolean)
+  disabled: boolean | ((record: T) => boolean)
+
+  // spanBodyOptions: ListGridSpanBodyOptions | null
+
   listen<TYPE extends keyof ListGridEventHandlersEventMap<T>>(
     type: TYPE,
     listener: (
       ...event: ListGridEventHandlersEventMap<T>[TYPE]
     ) => ListGridEventHandlersReturnMap[TYPE]
   ): EventListenerId;
+
   getField(col: number, row: number): FieldDef<T> | undefined;
+
   getRowRecord(row: number): MaybePromiseOrUndef<T>;
+
   getRecordIndexByRow(row: number): number;
+
   getRecordStartRowByRecordIndex(index: number): number;
 
   getHeaderField(col: number, row: number): any | undefined;
@@ -171,29 +235,45 @@ export interface ListGridAPI<T> extends DrawGridAPI {
   getHeaderValue(col: number, row: number): any | undefined;
 
   setHeaderValue(col: number, row: number, newValue: any): void;
+
   getCellRange(col: number, row: number): CellRange;
+
   getCellRangeByField(field: FieldDef<T>, index: number): CellRange | null;
+
   focusGridCell(field: FieldDef<T>, index: number): void;
+
   makeVisibleGridCell(field: FieldDef<T>, index: number): void;
+
+  selectCellRange(
+    startCol: number,
+    startRow: number,
+    endCol: number,
+    endRow: number
+  ): void
+
   getGridCanvasHelper(): GridCanvasHelperAPI;
+
   doChangeValue(
     col: number,
     row: number,
-
     changeValueCallback: (before: any) => any
   ): MaybePromise<boolean>;
+
   doGetCellValue(
     col: number,
     row: number,
-
     valueCallback: (value: any) => void
   ): boolean;
+
   doSetPasteValue(text: string): void;
+
   doSetPasteValue(
     text: string,
     test: (data: SetPasteValueTestData<T>) => boolean
   ): void;
+
   getLayoutCellId(col: number, row: number): LayoutObjectId;
+
   getColumnType(col: number, row: number): ColumnTypeAPI;
 }
 
@@ -206,22 +286,27 @@ export type SetPasteValueTestData<T> = CellAddress & {
   grid: ListGridAPI<T>;
   record: T;
   value: string;
-
   oldValue: any;
 };
 
 export interface InlineAPI {
   width(arg: { ctx: CanvasRenderingContext2D }): number;
+
   font(): string | null;
+
   color(): ColorDef | null;
+
   canDraw(): boolean;
+
   onReady(callback: AnyFunction): void;
 
   draw(opt: any): void;
+
   canBreak(): boolean;
 }
 
 type ColorsDef = ColorDef | (ColorDef | null)[];
+
 export interface GridCanvasHelperAPI {
   theme: RequiredThemeDefine;
 
@@ -239,6 +324,7 @@ export interface GridCanvasHelperAPI {
       icons?: SimpleColumnIconOption[];
     }
   ): void;
+
   button(
     caption: string,
     context: CellContext,
@@ -261,6 +347,7 @@ export interface GridCanvasHelperAPI {
       icons?: SimpleColumnIconOption[];
     }
   ): void;
+
   checkbox(
     check: boolean,
     context: CellContext,
@@ -273,6 +360,7 @@ export interface GridCanvasHelperAPI {
       textBaseline?: CanvasTextBaseline;
     }
   ): void;
+
   radioButton(
     check: boolean,
     context: CellContext,
@@ -288,6 +376,7 @@ export interface GridCanvasHelperAPI {
       textBaseline?: CanvasTextBaseline;
     }
   ): void;
+
   multilineText(
     multilines: string[],
     context: CellContext,
@@ -312,30 +401,36 @@ export interface GridCanvasHelperAPI {
     row: number,
     ctx: CanvasRenderingContext2D
   ): ColorDef;
+
   getColor(
     color: ColorsPropertyDefine,
     col: number,
     row: number,
     ctx: CanvasRenderingContext2D
   ): ColorsDef;
+
   toBoxPixelArray(
     value: number | string | (number | string)[],
     context: CellContext,
     font: string | undefined
-  ): [number, number, number, number];
+  ): [ number, number, number, number ];
+
   fillRectWithState(
     rect: RectProps,
     context: CellContext,
     option: { fillColor?: ColorPropertyDefine }
   ): void;
+
   drawBorderWithClip(
     context: CellContext,
     draw: (ctx: CanvasRenderingContext2D) => void
   ): void;
+
   drawWithClip(
     context: CellContext,
     draw: (ctx: CanvasRenderingContext2D) => void
   ): void;
+
   testFontLoad(
     font: string | undefined,
     value: string,
@@ -355,14 +450,21 @@ export interface GridCanvasHelperAPI {
     }
   ): InlineAPI;
 }
+
 export interface CellContext {
   readonly col: number;
   readonly row: number;
+
   getContext(): CanvasRenderingContext2D;
+
   toCurrentContext(): CellContext;
+
   getDrawRect(): RectProps | null;
+
   getRect(): RectProps;
+
   getSelection(): { select: CellAddress; range: CellRange };
+
   setRectFilter(rectFilter: (base: RectProps) => RectProps): void;
 }
 
@@ -373,13 +475,19 @@ export interface Selection {
 
 export interface ScrollableAPI {
   calcTop(top: number): number
+
   getElement(): HTMLDivElement
+
   setScrollSize(width: number, height: number): void
+
   scrollWidth: number
   scrollHeight: number
   scrollLeft: number
   scrollTop: number
+
   onScroll(fn: EventListener): void
+
   dispose(): void
+
   update(): void
 }

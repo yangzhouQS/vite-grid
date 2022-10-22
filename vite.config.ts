@@ -33,7 +33,7 @@ export default defineConfig({
 		rollupOptions: {
 			// https://rollupjs.org/guide/en/#big-list-of-options
 			input: {
-				main: resolve(__dirname, '/example/demo.ts'),
+				main: resolve(__dirname, 'example/demo.ts'),
 			},
 			external: [ 'vue' ],
 			output: {

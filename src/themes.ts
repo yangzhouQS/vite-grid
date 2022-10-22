@@ -9,37 +9,40 @@ export const BASIC = new Theme(basicTheme);
 export const MATERIAL_DESIGN = new Theme(materialDesignTheme);
 
 const builtin: { [key: string]: Theme } = {
-	BASIC,
-	MATERIAL_DESIGN,
+  BASIC,
+  MATERIAL_DESIGN,
 };
 let defTheme = MATERIAL_DESIGN;
 
 export const theme = { Theme };
+
 export function of(
-	value: ThemeDefine | string | undefined | null
+  value: ThemeDefine | string | undefined | null
 ): Theme | null {
-	if (!value) {
-		return null;
-	}
-	if (typeof value === 'string') {
-		const t = getIgnoreCase(getChoices(), value);
-		if (t) {
-			return t;
-		}
-		return null;
-	}
-	if (value instanceof Theme) {
-		return value;
-	}
-	return new Theme(value);
+  if (!value) {
+    return null;
+  }
+  if (typeof value === 'string') {
+    const t = getIgnoreCase(getChoices(), value);
+    if (t) {
+      return t;
+    }
+    return null;
+  }
+  if (value instanceof Theme) {
+    return value;
+  }
+  return new Theme(value);
 }
 
 export function getDefault(): Theme {
-	return defTheme;
+  return defTheme;
 }
+
 export function setDefault(defaultTheme: Theme): void {
-	defTheme = of(defaultTheme) || defTheme;
+  defTheme = of(defaultTheme) || defTheme;
 }
+
 export function getChoices(): { [key: string]: Theme } {
-	return extend(builtin, plugins);
+  return extend(builtin, plugins);
 }
